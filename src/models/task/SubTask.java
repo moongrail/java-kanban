@@ -1,11 +1,7 @@
 package models.task;
 
-public class SubTask extends Task{
-
+public class SubTask extends Task {
     private Integer idEpic;
-
-
-
 
     public SubTask() {
     }

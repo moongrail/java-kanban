@@ -15,21 +15,21 @@ public class Main {
         ManageService manageService = new ManageServiceImpl();
         Task firstEpic = new Epic(1, "Купить продукты",
                 "Сходить в магазин за продуктами");
-        Task firstSubTask = new SubTask(3, "Купить помидоры", "Найти свежие помидоры в магазине."
+        SubTask firstSubTask = new SubTask(3, "Купить помидоры", "Найти свежие помидоры в магазине."
                 , TaskStatus.NEW, firstEpic.getId());
-        Task secondSubTask = new SubTask(4, "Купить пиццу", "Заказать пиццу в кафе"
+        SubTask secondSubTask = new SubTask(4, "Купить пиццу", "Заказать пиццу в кафе"
                 , TaskStatus.NEW, firstEpic.getId());
 
         Task secondEpic = new Epic(2, "Спорт",
                 "Побегать в парке.");
-        Task thirdSubTask = new SubTask(5, "Обман", "Боже, иди домой, какой из тебя спортсмен.",
+        SubTask thirdSubTask = new SubTask(5, "Обман", "Боже, иди домой, какой из тебя спортсмен.",
                 TaskStatus.DONE, secondEpic.getId());
 
         manageService.addTask(firstEpic);
         manageService.addTask(secondEpic);
-        manageService.addSubTask(firstEpic.getId(), (SubTask) firstSubTask);
-        manageService.addSubTask(firstEpic.getId(), (SubTask) secondSubTask);
-        manageService.addSubTask(secondEpic.getId(), (SubTask) thirdSubTask);
+        manageService.addSubTask(firstEpic.getId(), firstSubTask);
+        manageService.addSubTask(firstEpic.getId(), secondSubTask);
+        manageService.addSubTask(secondEpic.getId(), thirdSubTask);
 
         //Распечатайте списки эпиков, задач и подзадач
         HashMap<Integer, Task> allTaskList = manageService.getAllTaskList();
@@ -41,10 +41,10 @@ public class Main {
          а статус эпика рассчитался по статусам подзадач.
          manageService.updateTask(secondSubTask)
          */
-        Task updateSecondSubTask = new SubTask(4, "Испечь пиццу", "Самому приготовить пиццу в кафе"
+        SubTask updateSecondSubTask = new SubTask(4, "Испечь пиццу", "Самому приготовить пиццу в кафе"
                 , TaskStatus.DONE, firstEpic.getId());
 
-        manageService.updateTask((SubTask) updateSecondSubTask);
+        manageService.updateTask(updateSecondSubTask);
         System.out.println(manageService.getTaskById(firstEpic.getId()));
         System.out.println("###########################################");
 
