@@ -18,7 +18,7 @@ public interface ManageService {
 
     Task addTask(Epic task);
 
-    Task addTask(Integer idEpic, SubTask subTask);
+    Task addSubTask(Integer idEpic, SubTask subTask);
 
     Task updateTask(Task task);
 

@@ -23,4 +23,14 @@ public class SubTask extends Task{
         this.idEpic = idEpic;
     }
 
+    @Override
+    public String toString() {
+        return "SubTask{" +
+                "idEpic=" + idEpic +
+                ", id=" + super.getId() +
+                ", title='" + super.getTitle() + '\'' +
+                ", description='" + super.getDescription() + '\'' +
+                ", status=" + super.getStatus() +
+                '}';
+    }
 }
