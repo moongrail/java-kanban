@@ -25,11 +25,16 @@ public class Main {
         SubTask thirdSubTask = new SubTask(5, "Обман", "Боже, иди домой, какой из тебя спортсмен.",
                 TaskStatus.DONE, secondEpic.getId());
 
+        Task simpleTask = new Task(77, "Просто задание", "Просто задание и никак " +
+                "не связано с эпиком или подзадачей эпика.",
+                TaskStatus.DONE);
+
         manageService.addTask(firstEpic);
         manageService.addTask(secondEpic);
         manageService.addSubTask(firstEpic.getId(), firstSubTask);
         manageService.addSubTask(firstEpic.getId(), secondSubTask);
         manageService.addSubTask(secondEpic.getId(), thirdSubTask);
+        manageService.addTask(simpleTask);
 
         //Распечатайте списки эпиков, задач и подзадач
         HashMap<Integer, Task> allTaskList = manageService.getAllTaskList();
@@ -49,8 +54,8 @@ public class Main {
         System.out.println("###########################################");
 
         //И, наконец, попробуйте удалить одну из задач и один из эпиков.
-        System.out.println("Удаление 1: " + manageService.removeTaskById(firstEpic.getId())); //return true
-        System.out.println("Удаление 2: " + manageService.removeTaskById(thirdSubTask.getId())); //return true
+        System.out.println("Удаление 1: " + manageService.removeTaskById(firstEpic.getId()));
+        System.out.println("Удаление 2: " + manageService.removeTaskById(thirdSubTask.getId()));
         System.out.println("###########################################");
         HashMap<Integer, Task> finalAllTaskList = manageService.getAllTaskList();
         finalAllTaskList.forEach((integer, task) -> System.out.println(integer + ": " + task));

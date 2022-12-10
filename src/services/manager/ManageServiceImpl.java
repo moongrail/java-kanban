@@ -135,21 +135,42 @@ public class ManageServiceImpl implements ManageService, StatusManager {
     @Override
     public boolean removeTaskById(Integer id) {
         if (taskRepository.containsKey(id)) {
-            boolean isSubTask = Arrays.stream(taskRepository.get(id).getClass()
+            boolean isSubTask = Arrays.stream(taskRepository.get(id)
+                            .getClass()
                             .getDeclaredFields())
                             .anyMatch(field -> field.getName().equals("idEpic"));
+            boolean isEpic = Arrays.stream(taskRepository.get(id)
+                            .getClass()
+                            .getDeclaredFields())
+                            .anyMatch(field -> field.getName().equals("subTasks"));
+
             if (isSubTask) {
-                SubTask task = (SubTask) taskRepository.get(id);
-                Epic epicToChange = (Epic) taskRepository.get(task.getIdEpic());
-                List<SubTask> subTasks = epicToChange.getSubTasks();
-                subTasks.remove(task);
-                epicToChange.setSubTasks(subTasks);
-                taskRepository.put(epicToChange.getId(), epicToChange);
+                removeSubtaskInEpic(id);
+            } else if (isEpic) {
+                removeEpicInSubtask(id);
             }
+
             taskRepository.remove(id);
             return true;
         }
         return false;
+    }
+
+    private void removeEpicInSubtask(Integer id) {
+        Epic task = (Epic) taskRepository.get(id);
+        for (int i = 0; i < task.getSubTasks().size(); i++) {
+            taskRepository.remove(task.getSubTasks().get(i).getId());
+        }
+    }
+
+    private void removeSubtaskInEpic(Integer id) {
+        SubTask task = (SubTask) taskRepository.get(id);
+        Epic epicToChange = (Epic) taskRepository.get(task.getIdEpic());
+        List<SubTask> subTasks = epicToChange.getSubTasks();
+        subTasks.remove(task);
+        epicToChange.setSubTasks(subTasks);
+        epicToChange.setStatus(getEpicStatus(subTasks));
+        taskRepository.put(epicToChange.getId(), epicToChange);
     }
 
     @Override
