@@ -10,6 +10,12 @@ public class Task {
     public Task() {
     }
 
+    public Task(Integer id, String title, String description) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+    }
+
     public Task(Integer id, String title, String description, TaskStatus status) {
         this.id = id;
         this.title = title;

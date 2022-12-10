@@ -53,13 +53,20 @@ public class ManageServiceImpl implements ManageService, StatusManager {
     }
 
     @Override
-    public Task addEpicTask(Epic task) {
-        return null;
+    public Task addTask(Epic task) {
+        task.setStatus(getEpicStatus(task.getSubTasks()));
+        taskRepository.put(task.getId(),task);
+        return taskRepository.get(task.getId());
     }
 
     @Override
-    public Task addSubTask(Epic epicTask, SubTask subTask) {
-        return null;
+    public Task addTask(Integer idEpic, SubTask subTask) {
+        taskRepository.put(subTask.getId(),subTask);
+        Epic taskEpic = (Epic)taskRepository.get(idEpic);
+        List<SubTask> subTasks = taskEpic.getSubTasks();
+        subTasks.add(subTask);
+        taskEpic.setSubTasks(subTasks);
+        return subTask;
     }
 
     @Override
@@ -106,7 +113,6 @@ public class ManageServiceImpl implements ManageService, StatusManager {
             newSubtask.setTitle(task.getTitle());
             newSubtask.setDescription(task.getDescription());
             newSubtask.setIdEpic(task.getIdEpic());
-            newSubtask.setNameEpic(task.getNameEpic());
             newSubtask.setStatus(task.getStatus());
             taskRepository.put(task.getId(),newSubtask);
 

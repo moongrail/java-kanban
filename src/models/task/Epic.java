@@ -7,6 +7,13 @@ public class Epic extends Task{
 
     private List<SubTask> subTasks;
 
+    public Epic() {
+    }
+
+    public Epic(Integer id, String title, String description) {
+        super(id, title, description);
+    }
+
     public List<SubTask> getSubTasks() {
         return subTasks;
     }
