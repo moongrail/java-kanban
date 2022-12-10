@@ -7,6 +7,7 @@ import models.task.TaskStatus;
 import services.status.StatusManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -134,6 +135,17 @@ public class ManageServiceImpl implements ManageService, StatusManager {
     @Override
     public boolean removeTaskById(Integer id) {
         if (taskRepository.containsKey(id)) {
+            boolean isSubTask = Arrays.stream(taskRepository.get(id).getClass()
+                            .getDeclaredFields())
+                            .anyMatch(field -> field.getName().equals("idEpic"));
+            if (isSubTask) {
+                SubTask task = (SubTask) taskRepository.get(id);
+                Epic epicToChange = (Epic) taskRepository.get(task.getIdEpic());
+                List<SubTask> subTasks = epicToChange.getSubTasks();
+                subTasks.remove(task);
+                epicToChange.setSubTasks(subTasks);
+                taskRepository.put(epicToChange.getId(), epicToChange);
+            }
             taskRepository.remove(id);
             return true;
         }

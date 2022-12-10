@@ -41,8 +41,8 @@ public class Main {
          а статус эпика рассчитался по статусам подзадач.
          manageService.updateTask(secondSubTask)
          */
-        SubTask updateSecondSubTask = new SubTask(4, "Испечь пиццу", "Самому приготовить пиццу в кафе"
-                , TaskStatus.DONE, firstEpic.getId());
+        SubTask updateSecondSubTask = new SubTask(4, "Испечь пиццу", "Самому приготовить пиццу.",
+                TaskStatus.DONE, firstEpic.getId());
 
         manageService.updateTask(updateSecondSubTask);
         System.out.println(manageService.getTaskById(firstEpic.getId()));
