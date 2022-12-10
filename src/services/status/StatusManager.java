@@ -1,8 +1,8 @@
-package services;
+package services.status;
 
 import models.task.Epic;
 import models.task.TaskStatus;
 
 public interface StatusManager {
-//    TaskStatus getEpicStatus(Epic epic);
+    TaskStatus setEpicStatus(Epic epic);
 }

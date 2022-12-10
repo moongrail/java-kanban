@@ -2,18 +2,26 @@ package models.task;
 
 public class Task {
 
-    private Long id;
+    private Integer id;
     private String title;
     private String description;
     private TaskStatus status;
 
+    public Task() {
+    }
 
+    public Task(Integer id, String title, String description, TaskStatus status) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.status = status;
+    }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
