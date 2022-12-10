@@ -5,6 +5,7 @@ import models.task.SubTask;
 import models.task.Task;
 
 import java.util.HashMap;
+import java.util.List;
 
 public interface ManageService {
 
@@ -27,5 +28,7 @@ public interface ManageService {
     SubTask updateTask(SubTask task);
 
     boolean removeTaskById(Integer id);
+
+    List<SubTask> getSubTasksByEpic(Epic epic);
 
 }

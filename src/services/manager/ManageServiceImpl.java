@@ -6,6 +6,7 @@ import models.task.Task;
 import models.task.TaskStatus;
 import services.status.StatusManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -137,6 +138,18 @@ public class ManageServiceImpl implements ManageService, StatusManager {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<SubTask> getSubTasksByEpic(Epic epic) {
+        Epic task = (Epic) taskRepository.get(epic.getId());
+        List<SubTask> subTasks = task.getSubTasks();
+        if (!subTasks.isEmpty()) {
+            return subTasks;
+        } else {
+            System.out.println("Список подзадач пуст.");
+            return new ArrayList<>();
+        }
     }
 
     @Override
