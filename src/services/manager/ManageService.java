@@ -9,25 +9,21 @@ import java.util.List;
 
 public interface ManageService {
 
-    HashMap<Integer, Task> getAllTaskList();
-
-    boolean removeAllTasks();
-
+    HashMap<Integer, Task> getAllMap();
     Task getTaskById(Integer id);
-
     Task addTask(Task task);
-
-    Task addTask(Epic task);
-
-    Task addSubTask(Integer idEpic, SubTask subTask);
-
+    Epic addEpic(Epic task);
+    SubTask addSubTask(Integer idEpic, SubTask subTask);
     Task updateTask(Task task);
-
-    Epic updateTask(Epic task);
-
-    SubTask updateTask(SubTask task);
-
+    Epic updateEpic(Epic task);
+    SubTask updateSubTask(SubTask task);
     boolean removeTaskById(Integer id);
+    boolean removeEpicById(Integer id);
+    boolean removeSubTask(Integer id);
+    boolean removeAll();
+    boolean removeTaskMap();
+    boolean removeEpicMap();
+    boolean removeSubTaskMap();
 
     List<SubTask> getSubTasksByEpic(Epic epic);
 
