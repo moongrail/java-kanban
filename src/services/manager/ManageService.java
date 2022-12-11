@@ -27,7 +27,5 @@ public interface ManageService {
     boolean removeTaskMap();
     boolean removeEpicMap();
     boolean removeSubTaskMap();
-
     List<SubTask> getSubTasksByEpic(Epic epic);
-
 }
