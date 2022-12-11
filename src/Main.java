@@ -45,7 +45,7 @@ public class Main {
                 TaskStatus.DONE, firstEpic.getId());
 
         manageService.updateSubTask(updateSecondSubTask);
-        System.out.println(manageService.getTaskById(firstEpic.getId()));
+        System.out.println(manageService.getEpicById(firstEpic.getId()));
         System.out.println("###########################################");
 
         //И, наконец, попробуйте удалить одну из задач и один из эпиков.

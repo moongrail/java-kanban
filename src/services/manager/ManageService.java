@@ -14,6 +14,8 @@ public interface ManageService {
     HashMap<Integer, SubTask> getAllSubTaskMap();
     HashMap<Integer, Task> getAllTaskMap();
     Task getTaskById(Integer id);
+    Epic getEpicById(Integer id);
+    SubTask getSubTaskById(Integer id);
     Task addTask(Task task);
     Epic addEpic(Epic task);
     SubTask addSubTask(Integer idEpic, SubTask subTask);

@@ -81,13 +81,27 @@ public class ManageServiceImpl implements ManageService, StatusManager {
     public Task getTaskById(Integer id) {
         if (taskRepository.containsKey(id)) {
             return taskRepository.get(id);
-        } else if (epicRepository.containsKey(id)) {
-            return epicRepository.get(id);
-        } else if (subTaskRepository.containsKey(id)) {
-            return subTaskRepository.get(id);
         }
         printErrorIdTask("Задачи под номером %d нет.\n", id);
         return new Task();
+    }
+
+    @Override
+    public Epic getEpicById(Integer id) {
+        if (epicRepository.containsKey(id)) {
+            return epicRepository.get(id);
+        }
+        printErrorIdTask("Задачи под номером %d нет.\n", id);
+        return new Epic();
+    }
+
+    @Override
+    public SubTask getSubTaskById(Integer id) {
+        if (subTaskRepository.containsKey(id)) {
+            return subTaskRepository.get(id);
+        }
+        printErrorIdTask("Задачи под номером %d нет.\n", id);
+        return new SubTask();
     }
 
     @Override
@@ -288,7 +302,7 @@ public class ManageServiceImpl implements ManageService, StatusManager {
 
     @Override
     public boolean removeSubTaskMap() {
-        for (Epic epic: epicRepository.values()){
+        for (Epic epic : epicRepository.values()) {
             epic.setSubTasks(new ArrayList<>());
         }
         subTaskRepository.clear();
