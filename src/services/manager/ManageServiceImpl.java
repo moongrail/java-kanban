@@ -38,6 +38,24 @@ public class ManageServiceImpl implements ManageService, StatusManager {
     }
 
     @Override
+    public HashMap<Integer, Epic> getAllEpicMap() {
+        if (!epicRepository.isEmpty()) {
+            return epicRepository;
+        }
+        System.out.println("Список эпиков пуст.");
+        return new HashMap<>();
+    }
+
+    @Override
+    public HashMap<Integer, SubTask> getAllSubTaskMap() {
+        if (!subTaskRepository.isEmpty()) {
+            return subTaskRepository;
+        }
+        System.out.println("Список подзадач эпиков пуст.");
+        return new HashMap<>();
+    }
+
+    @Override
     public boolean removeAll() {
         taskRepository.clear();
         epicRepository.clear();
