@@ -34,7 +34,7 @@ public class ManageServiceImpl implements ManageService, StatusManager {
             return allMap;
         }
         System.out.println("Список задач пуст.");
-        return null;
+        return new HashMap<>();
     }
 
     @Override
@@ -43,7 +43,7 @@ public class ManageServiceImpl implements ManageService, StatusManager {
             return epicRepository;
         }
         System.out.println("Список эпиков пуст.");
-        return null;
+        return new HashMap<>();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ManageServiceImpl implements ManageService, StatusManager {
             return subTaskRepository;
         }
         System.out.println("Список подзадач эпиков пуст.");
-        return null;
+        return new HashMap<>();
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ManageServiceImpl implements ManageService, StatusManager {
             return taskRepository;
         }
         System.out.println("Список простых задач пуст.");
-        return null;
+        return new HashMap<>();
     }
 
     @Override
@@ -254,7 +254,7 @@ public class ManageServiceImpl implements ManageService, StatusManager {
             return subTasks;
         } else {
             System.out.println("Список подзадач пуст.");
-            return null;
+            return new ArrayList<>();
         }
     }
 
