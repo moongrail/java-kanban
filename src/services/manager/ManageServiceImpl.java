@@ -83,7 +83,7 @@ public class ManageServiceImpl implements ManageService, StatusManager {
             return taskRepository.get(id);
         }
         printErrorIdTask("Задачи под номером %d нет.\n", id);
-        return new Task();
+        return null;
     }
 
     @Override
@@ -92,7 +92,7 @@ public class ManageServiceImpl implements ManageService, StatusManager {
             return epicRepository.get(id);
         }
         printErrorIdTask("Задачи под номером %d нет.\n", id);
-        return new Epic();
+        return null;
     }
 
     @Override
@@ -101,7 +101,7 @@ public class ManageServiceImpl implements ManageService, StatusManager {
             return subTaskRepository.get(id);
         }
         printErrorIdTask("Задачи под номером %d нет.\n", id);
-        return new SubTask();
+        return null;
     }
 
     @Override
@@ -145,7 +145,7 @@ public class ManageServiceImpl implements ManageService, StatusManager {
             return taskRepository.get(task.getId());
         }
         printErrorIdTask("Задачи с id = %d нет.\n", task.getId());
-        return new Task();
+        return null;
     }
 
     @Override
@@ -164,7 +164,7 @@ public class ManageServiceImpl implements ManageService, StatusManager {
             return epicRepository.get(updateEpic.getId());
         }
         printErrorIdTask("Задачи с id = %d нет.\n", updateEpic.getId());
-        return new Epic();
+        return null;
     }
 
     @Override
@@ -193,7 +193,7 @@ public class ManageServiceImpl implements ManageService, StatusManager {
             return subTaskRepository.get(task.getId());
         }
         printErrorIdTask("Задачи с id = %d нет.\n", task.getId());
-        return new SubTask();
+        return null;
     }
 
     @Override
