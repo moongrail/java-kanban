@@ -10,6 +10,9 @@ import java.util.List;
 public interface ManageService {
 
     HashMap<Integer, Task> getAllMap();
+    HashMap<Integer, Epic> getAllEpicMap();
+    HashMap<Integer, SubTask> getAllSubTaskMap();
+    HashMap<Integer, Task> getAllTaskMap();
     Task getTaskById(Integer id);
     Task addTask(Task task);
     Epic addEpic(Epic task);
