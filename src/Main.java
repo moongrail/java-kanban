@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Поехали!");
 
-        TaskManager taskManager = Managers.getDefault();
+        TaskManager taskManager = Managers.getDefaultTaskManager();
 
         Epic firstEpic = new Epic(1,"Купить продукты", "Сходить в магазин за продуктами");
         SubTask firstSubTask = new SubTask(3,"Купить помидоры", "Найти свежие помидоры в магазине."

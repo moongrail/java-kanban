@@ -5,6 +5,7 @@ import models.task.SubTask;
 import models.task.Task;
 import services.status.StatusManager;
 import services.status.StatusManagerImpl;
+import services.util.Managers;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,7 +23,7 @@ public class InMemoryTaskManager implements TaskManager {
         epicRepository = new HashMap<>();
         subTaskRepository = new HashMap<>();
         taskRepository = new HashMap<>();
-        historyManager = new HistoryManagerServiceImpl();
+        historyManager = Managers.getDefaultHistory();
         statusManager = new StatusManagerImpl();
     }
 
