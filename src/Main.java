@@ -49,7 +49,7 @@ public class Main {
 
         System.out.println("###########################################");
 
-        //Вывод последних 10 запрошенных эпиков см id, нe idEpic;
+        //Вывод последних 10 запрошенных тасков в истории;
         List<Task> history = taskManager.getHistory();
         for (int i = 0; i < history.size(); i++){
             System.out.printf("Строчка %d: %s\n",i+1,history.get(i).getId());
