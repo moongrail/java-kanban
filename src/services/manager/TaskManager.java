@@ -7,7 +7,7 @@ import models.task.Task;
 import java.util.HashMap;
 import java.util.List;
 
-public interface ManageService {
+public interface TaskManager {
 
     HashMap<Integer, Task> getAllMap();
     HashMap<Integer, Epic> getAllEpicMap();
@@ -30,4 +30,6 @@ public interface ManageService {
     boolean removeEpicMap();
     boolean removeSubTaskMap();
     List<SubTask> getSubTasksByEpic(Epic epic);
+    List<Task> getHistory();
+
 }

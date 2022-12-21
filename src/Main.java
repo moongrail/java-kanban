@@ -2,17 +2,17 @@ import models.task.Epic;
 import models.task.SubTask;
 import models.task.Task;
 import models.task.TaskStatus;
-import services.manager.ManageService;
-import services.manager.ManageServiceImpl;
+import services.manager.TaskManager;
+import services.util.Managers;
 
-import java.util.HashMap;
+import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
         System.out.println("Поехали!");
 
-        ManageService manageService = new ManageServiceImpl();
+        TaskManager taskManager = Managers.getDefault();
 
         Epic firstEpic = new Epic(1,"Купить продукты", "Сходить в магазин за продуктами");
         SubTask firstSubTask = new SubTask(3,"Купить помидоры", "Найти свежие помидоры в магазине."
@@ -25,35 +25,34 @@ public class Main {
         Task simpleTask = new Task(77,"Просто задание", "Просто задание и никак " +
                 "не связано с эпиком или подзадачей эпика.", TaskStatus.DONE);
 
-        manageService.addEpic(firstEpic);
-        manageService.addEpic(secondEpic);
-        manageService.addSubTask(firstEpic.getId(), firstSubTask);
-        manageService.addSubTask(firstEpic.getId(), secondSubTask);
-        manageService.addSubTask(secondEpic.getId(), thirdSubTask);
-        manageService.addTask(simpleTask);
+        taskManager.addEpic(firstEpic);
+        taskManager.addEpic(secondEpic);
+        taskManager.addSubTask(firstEpic.getId(), firstSubTask);
+        taskManager.addSubTask(firstEpic.getId(), secondSubTask);
+        taskManager.addSubTask(secondEpic.getId(), thirdSubTask);
+        taskManager.addTask(simpleTask);
 
-        //Распечатайте списки эпиков, задач и подзадач
-        HashMap<Integer, Task> allTaskMap = manageService.getAllMap();
-        allTaskMap.forEach((integer, task) -> System.out.println(integer + ": " + task));
+        taskManager.getTaskById(77);
+        taskManager.getTaskById(77);
+        taskManager.getTaskById(77);
+        taskManager.getTaskById(77);
+        taskManager.getEpicById(2);
+        taskManager.getSubTaskById(3);
+        taskManager.getSubTaskById(4);
+        taskManager.getSubTaskById(5);
+        taskManager.getTaskById(77);
+        taskManager.getTaskById(77);
+        taskManager.getSubTaskById(5);
+        taskManager.getSubTaskById(5);
+        taskManager.getSubTaskById(3);
+        taskManager.getEpicById(1);
+
         System.out.println("###########################################");
-        /* Измените статусы созданных объектов, распечатайте.
-         Проверьте, что статус задачи и подзадачи сохранился,
-         а статус эпика рассчитался по статусам подзадач.
-         manageService.updateTask(secondSubTask)
-         */
-        SubTask updateSecondSubTask = new SubTask(4, "Испечь пиццу", "Самому приготовить пиццу.",
-                TaskStatus.DONE, firstEpic.getId());
 
-        manageService.updateSubTask(updateSecondSubTask);
-        System.out.println(manageService.getEpicById(firstEpic.getId()));
-        System.out.println("###########################################");
-
-        //И, наконец, попробуйте удалить одну из задач и один из эпиков.
-        System.out.println("Удаление Эпика 1: " + manageService.removeEpicById(firstEpic.getId()));
-        System.out.println("Удаление Сабтаска 5: " + manageService.removeSubTask(thirdSubTask.getId()));
-        System.out.println("###########################################");
-        HashMap<Integer, Task> finalAllTaskMap= manageService.getAllMap();
-        finalAllTaskMap.forEach((integer, task) -> System.out.println(integer + ": " + task));
-
+        //Вывод последних 10 запрошенных эпиков см id, нe idEpic;
+        List<Task> history = taskManager.getHistory();
+        for (int i = 0; i < history.size(); i++){
+            System.out.printf("Строчка %d: %s\n",i+1,history.get(i).getId());
+        }
     }
 }

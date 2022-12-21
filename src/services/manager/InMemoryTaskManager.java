@@ -3,23 +3,27 @@ package services.manager;
 import models.task.Epic;
 import models.task.SubTask;
 import models.task.Task;
-import models.task.TaskStatus;
 import services.status.StatusManager;
+import services.status.StatusManagerImpl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class ManageServiceImpl implements ManageService, StatusManager {
+public class InMemoryTaskManager implements TaskManager {
 
     private final HashMap<Integer, Task> taskRepository;
     private final HashMap<Integer, Epic> epicRepository;
     private final HashMap<Integer, SubTask> subTaskRepository;
+    private final HistoryManager historyManager;
 
-    public ManageServiceImpl() {
+    private final StatusManager statusManager;
+
+    public InMemoryTaskManager() {
         epicRepository = new HashMap<>();
         subTaskRepository = new HashMap<>();
         taskRepository = new HashMap<>();
+        historyManager = new HistoryManagerServiceImpl();
+        statusManager = new StatusManagerImpl();
     }
 
     @Override
@@ -80,7 +84,9 @@ public class ManageServiceImpl implements ManageService, StatusManager {
     @Override
     public Task getTaskById(Integer id) {
         if (taskRepository.containsKey(id)) {
-            return taskRepository.get(id);
+            Task task = taskRepository.get(id);
+            historyManager.addToHistory(task);
+            return task;
         }
         printErrorIdTask("Задачи под номером %d нет.\n", id);
         return null;
@@ -89,7 +95,9 @@ public class ManageServiceImpl implements ManageService, StatusManager {
     @Override
     public Epic getEpicById(Integer id) {
         if (epicRepository.containsKey(id)) {
-            return epicRepository.get(id);
+            Epic epic = epicRepository.get(id);
+            historyManager.addToHistory(epic);
+            return epic;
         }
         printErrorIdTask("Задачи под номером %d нет.\n", id);
         return null;
@@ -98,7 +106,9 @@ public class ManageServiceImpl implements ManageService, StatusManager {
     @Override
     public SubTask getSubTaskById(Integer id) {
         if (subTaskRepository.containsKey(id)) {
-            return subTaskRepository.get(id);
+            SubTask subTask = subTaskRepository.get(id);
+            historyManager.addToHistory(subTask);
+            return subTask;
         }
         printErrorIdTask("Задачи под номером %d нет.\n", id);
         return null;
@@ -112,7 +122,7 @@ public class ManageServiceImpl implements ManageService, StatusManager {
 
     @Override
     public Epic addEpic(Epic task) {
-        task.setStatus(getEpicStatus(task.getSubTasks()));
+        task.setStatus(statusManager.getEpicStatus(task.getSubTasks()));
         epicRepository.put(task.getId(), task);
         return epicRepository.get(task.getId());
     }
@@ -125,7 +135,7 @@ public class ManageServiceImpl implements ManageService, StatusManager {
         if (taskEpic != null) {
             List<SubTask> subTasks = taskEpic.getSubTasks();
             subTasks.add(subTask);
-            taskEpic.setStatus(getEpicStatus(taskEpic.getSubTasks()));
+            taskEpic.setStatus(statusManager.getEpicStatus(taskEpic.getSubTasks()));
             taskEpic.setSubTasks(subTasks);
             epicRepository.put(taskEpic.getId(), taskEpic);
         }
@@ -157,7 +167,7 @@ public class ManageServiceImpl implements ManageService, StatusManager {
             tempEpic.setTitle(updateEpic.getTitle());
             tempEpic.setDescription(updateEpic.getDescription());
             tempEpic.setSubTasks(updateEpic.getSubTasks());
-            tempEpic.setStatus(getEpicStatus(updateEpic.getSubTasks()));
+            tempEpic.setStatus(statusManager.getEpicStatus(updateEpic.getSubTasks()));
 
             epicRepository.put(updateEpic.getId(), tempEpic);
 
@@ -185,7 +195,7 @@ public class ManageServiceImpl implements ManageService, StatusManager {
             subTasks.remove(oldSubTask);
             subTasks.add(newSubtask);
             taskEpic.setSubTasks(subTasks);
-            taskEpic.setStatus(getEpicStatus(taskEpic.getSubTasks()));
+            taskEpic.setStatus(statusManager.getEpicStatus(taskEpic.getSubTasks()));
 
             epicRepository.put(taskEpic.getId(), taskEpic);
             subTaskRepository.put(task.getId(), newSubtask);
@@ -239,7 +249,7 @@ public class ManageServiceImpl implements ManageService, StatusManager {
             List<SubTask> subTasks = epicToChange.getSubTasks();
             subTasks.remove(subTask);
             epicToChange.setSubTasks(subTasks);
-            epicToChange.setStatus(getEpicStatus(subTasks));
+            epicToChange.setStatus(statusManager.getEpicStatus(subTasks));
             epicRepository.put(epicToChange.getId(), epicToChange);
         } else {
             printErrorIdTask("Эпика с id = %d нет.\n", id);
@@ -255,27 +265,6 @@ public class ManageServiceImpl implements ManageService, StatusManager {
         } else {
             System.out.println("Список подзадач пуст.");
             return new ArrayList<>();
-        }
-    }
-
-    @Override
-    public TaskStatus setEpicStatus(Epic epic) {
-        Epic task = (Epic) taskRepository.get(epic.getId());
-        List<SubTask> subTasks = task.getSubTasks();
-        return getEpicStatus(subTasks);
-    }
-
-    public TaskStatus getEpicStatus(List<SubTask> subTasks) {
-
-        boolean isNew = subTasks.stream().allMatch(subTask -> subTask.getStatus().equals(TaskStatus.NEW));
-        boolean isDone = subTasks.stream().allMatch(subTask -> subTask.getStatus().equals(TaskStatus.DONE));
-
-        if (subTasks.isEmpty() || isNew) {
-            return TaskStatus.NEW;
-        } else if (isDone) {
-            return TaskStatus.DONE;
-        } else {
-            return TaskStatus.IN_PROGRESS;
         }
     }
 
@@ -311,6 +300,19 @@ public class ManageServiceImpl implements ManageService, StatusManager {
         }
         System.out.println("Что-то пошло не так.");
         return false;
+    }
+
+    @Override
+    public List<Task> getHistory() {
+        HashMap<Integer, Task> historyMap = historyManager.getHistoryMap();
+        if (!historyMap.isEmpty()) {
+            return historyMap.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
+                    .map(Map.Entry::getValue)
+                    .collect(Collectors.toList());
+        }
+        System.out.println("История пуста.");
+        return new ArrayList<>();
     }
 
     private void printErrorIdTask(String format, Integer id) {
