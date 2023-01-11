@@ -78,6 +78,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node<Task> taskNode = historyReadStatistic.get(id);
         if (taskNode != null) {
             removeNode(taskNode);
+            historyReadStatistic.remove(taskNode.data.getId());
         }
     }
 
