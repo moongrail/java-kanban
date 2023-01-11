@@ -45,7 +45,6 @@ public class Main {
 
 
         System.out.println("###########################################");
-
         printHistory(taskManager.getHistory());
 //        taskManager.removeSubTask(3);
         taskManager.removeEpicById(1);

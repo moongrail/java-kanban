@@ -34,7 +34,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         return tasks;
     }
 
-    public void removeNode(Node<Task> task) {
+    private void removeNode(Node<Task> task) {
         if (task != null) {
 
             Node<Task> next = task.next;
@@ -95,6 +95,4 @@ public class InMemoryHistoryManager implements HistoryManager {
             this.prev = prev;
         }
     }
-
-
 }
