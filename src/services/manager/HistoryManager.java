@@ -2,9 +2,12 @@ package services.manager;
 
 import models.task.Task;
 
-import java.util.HashMap;
+import java.util.List;
 
 public interface HistoryManager {
-    void addToHistory(Task task);
-    HashMap<Integer, Task> getHistoryMap();
+    void add(Task task);
+
+    List<Task> getHistory();
+
+    void remove(int id);
 }
