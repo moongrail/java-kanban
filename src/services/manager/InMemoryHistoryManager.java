@@ -15,21 +15,21 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node<Task> tempLast = last;
         Node<Task> newLast = new Node<>(task, null, tempLast);
         last = newLast;
-        historyReadStatistic.put(task.getId(), newLast);
-
         if (tempLast == null) {
             first = newLast;
         } else {
             tempLast.next = newLast;
         }
+
+        historyReadStatistic.put(task.getId(), newLast);
     }
 
     private List<Task> getTasks() {
         List<Task> tasks = new ArrayList<>();
-        Node<Task> currentNode = first;
+        Node<Task> currentNode = last;
         while (currentNode != null) {
             tasks.add(currentNode.data);
-            currentNode = currentNode.next;
+            currentNode = currentNode.prev;
         }
         return tasks;
     }
@@ -39,10 +39,9 @@ public class InMemoryHistoryManager implements HistoryManager {
 
             Node<Task> next = task.next;
             Node<Task> prev = task.prev;
-            task.data = null;
 
-            if (first.equals(task) && last.equals(task)) {
-                first = null;
+            if (prev == null) {
+                first = next;
                 last = null;
             } else if (first.equals(task) && !(last.equals(task))) {
                 first = next;
@@ -69,7 +68,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     public List<Task> getHistory() {
         List<Task> tasks = getTasks();
         if (!tasks.isEmpty()) {
-            Collections.reverse(tasks);
             return tasks;
         }
         return new ArrayList<>();
