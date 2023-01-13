@@ -82,7 +82,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    static class Node<T extends Task> {
+    private static class Node<T extends Task> {
 
         public T data;
         public Node<T> next;
