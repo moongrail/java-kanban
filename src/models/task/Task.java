@@ -3,6 +3,7 @@ package models.task;
 public class Task {
 
     private Integer id;
+    private TaskType type;
     private String title;
     private String description;
     private TaskStatus status;
@@ -10,17 +11,12 @@ public class Task {
     public Task() {
     }
 
-    public Task(Integer id, String title, String description) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-    }
-
-    public Task(Integer id, String title, String description, TaskStatus status) {
+    public Task(Integer id,TaskType type, String title, TaskStatus status, String description) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.status = status;
+        this.type = type;
     }
 
     public Integer getId() {
@@ -55,10 +51,19 @@ public class Task {
         this.status = status;
     }
 
+    public TaskType getType() {
+        return type;
+    }
+
+    public void setType(TaskType type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
         return "Task{" +
                 "id=" + id +
+                ", type=" + type +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +

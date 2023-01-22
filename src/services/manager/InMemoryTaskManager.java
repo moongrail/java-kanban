@@ -337,5 +337,23 @@ public class InMemoryTaskManager implements TaskManager {
         System.out.printf(format, id);
     }
 
+    public HashMap<Integer, Task> getTaskRepository() {
+        return taskRepository;
+    }
 
+    public HashMap<Integer, Epic> getEpicRepository() {
+        return epicRepository;
+    }
+
+    public HashMap<Integer, SubTask> getSubTaskRepository() {
+        return subTaskRepository;
+    }
+
+    public HistoryManager getHistoryManager() {
+        return historyManager;
+    }
+
+    public StatusManager getStatusManager() {
+        return statusManager;
+    }
 }

@@ -1,29 +1,36 @@
-import models.task.Epic;
-import models.task.SubTask;
-import models.task.Task;
-import models.task.TaskStatus;
+import models.task.*;
 import services.manager.TaskManager;
 import services.util.Managers;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("Поехали!");
+            Path resources = Files.createFile(Path.of("resources/tasks.csv"));
+            File file = new File(resources.toString());
 
-        TaskManager taskManager = Managers.getDefaultTaskManager();
+        TaskManager taskManager = Managers.getDefaultFileBackedTasksManager(file);
 
-        Epic firstEpic = new Epic(1, "Купить продукты", "Сходить в магазин за продуктами");
-        SubTask firstSubTask = new SubTask(3, "Купить помидоры", "Найти свежие помидоры в магазине."
-                , TaskStatus.NEW, firstEpic.getId());
-        SubTask secondSubTask = new SubTask(4, "Купить пиццу", "Заказать пиццу в кафе"
-                , TaskStatus.NEW, firstEpic.getId());
-        Epic secondEpic = new Epic(2, "Спорт", "Побегать в парке.");
-        SubTask thirdSubTask = new SubTask(5, "Обман", "Боже, иди домой, какой из тебя спортсмен.",
-                TaskStatus.DONE, secondEpic.getId());
-        Task simpleTask = new Task(77, "Просто задание", "Просто задание и никак " +
-                "не связано с эпиком или подзадачей эпика.", TaskStatus.DONE);
+        Epic firstEpic = new Epic(1, TaskType.EPIC, "Купить продукты", TaskStatus.NEW
+                , "Сходить в магазин за продуктами");
+        SubTask firstSubTask = new SubTask(3, TaskType.SUBTASK, "Купить помидоры"
+                , TaskStatus.NEW, "Найти свежие помидоры в магазине."
+                , firstEpic.getId());
+        SubTask secondSubTask = new SubTask(4, TaskType.SUBTASK, "Купить пиццу", TaskStatus.NEW
+                , "Заказать пиццу в кафе"
+                , firstEpic.getId());
+        Epic secondEpic = new Epic(2, TaskType.EPIC, "Спорт", TaskStatus.NEW, "Побегать в парке.");
+        SubTask thirdSubTask = new SubTask(5, TaskType.SUBTASK, "Обман", TaskStatus.DONE
+                , "Какой из тебя спортсмен.",
+                secondEpic.getId());
+        Task simpleTask = new Task(77, TaskType.TASK, "Просто задание", TaskStatus.DONE
+                , "Просто задание и никак не связано с эпиком или подзадачей эпика.");
 
         taskManager.addEpic(firstEpic);
         taskManager.addEpic(secondEpic);
@@ -32,22 +39,23 @@ public class Main {
         taskManager.addSubTask(firstEpic.getId(), thirdSubTask);
         taskManager.addTask(simpleTask);
 
-        taskManager.getTaskById(77);
-        taskManager.getTaskById(77);
-        taskManager.getTaskById(77);
-        taskManager.getTaskById(77);
-        taskManager.getEpicById(2);
-        taskManager.getEpicById(1);
-        taskManager.getSubTaskById(3);
-        taskManager.getSubTaskById(4);
-        taskManager.getSubTaskById(5);
-        taskManager.getSubTaskById(3);
+//        taskManager.getTaskById(77);
+//        taskManager.getTaskById(77);
+//        taskManager.getTaskById(77);
+//        taskManager.getTaskById(77);
+//        taskManager.getEpicById(2);
+//        taskManager.getEpicById(1);
+//        taskManager.getSubTaskById(3);
+//        taskManager.getSubTaskById(4);
+//        taskManager.getSubTaskById(5);
+//        taskManager.getSubTaskById(3);
 
 
         System.out.println("###########################################");
         printHistory(taskManager.getHistory());
 //        taskManager.removeSubTask(3);
         taskManager.removeEpicById(1);
+
         System.out.println("###########################################");
         printHistory(taskManager.getHistory());
     }

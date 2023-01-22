@@ -3,15 +3,15 @@ package models.task;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Epic extends Task{
+public class Epic extends Task {
 
     private List<SubTask> subTasks;
 
     public Epic() {
     }
 
-    public Epic(Integer id, String title, String description) {
-        super(id, title, description , TaskStatus.NEW);
+    public Epic(Integer id, TaskType type, String title, TaskStatus status, String description) {
+        super(id, type, title, status, description);
         subTasks = new ArrayList<>();
     }
 
