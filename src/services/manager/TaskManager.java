@@ -22,13 +22,13 @@ public interface TaskManager {
     Task updateTask(Task task);
     Epic updateEpic(Epic task);
     SubTask updateSubTask(SubTask task);
-    boolean removeTaskById(Integer id);
-    boolean removeEpicById(Integer id);
-    boolean removeSubTask(Integer id);
-    boolean removeAll();
-    boolean removeTaskMap();
-    boolean removeEpicMap();
-    boolean removeSubTaskMap();
+    void removeTaskById(Integer id);
+    void removeEpicById(Integer id);
+    void removeSubTask(Integer id);
+    void removeAll();
+    void removeTaskMap();
+    void removeEpicMap();
+    void removeSubTaskMap();
     List<SubTask> getSubTasksByEpic(Epic epic);
     List<Task> getHistory();
 

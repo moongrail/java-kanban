@@ -7,17 +7,14 @@ import services.status.StatusManager;
 import services.status.StatusManagerImpl;
 import services.util.Managers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private final HashMap<Integer, Task> taskRepository;
-    private final HashMap<Integer, Epic> epicRepository;
-    private final HashMap<Integer, SubTask> subTaskRepository;
-    private final HistoryManager historyManager;
+    protected final HashMap<Integer, Task> taskRepository;
+    protected final HashMap<Integer, Epic> epicRepository;
+    protected final HashMap<Integer, SubTask> subTaskRepository;
+    protected final HistoryManager historyManager;
 
     private final StatusManager statusManager;
 
@@ -33,9 +30,9 @@ public class InMemoryTaskManager implements TaskManager {
     public HashMap<Integer, Task> getAllMap() {
         HashMap<Integer, Task> allMap = new HashMap<>();
 
+        allMap.putAll(taskRepository);
         allMap.putAll(epicRepository);
         allMap.putAll(subTaskRepository);
-        allMap.putAll(taskRepository);
 
         if (!allMap.isEmpty()) {
             return allMap;
@@ -72,7 +69,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public boolean removeAll() {
+    public void removeAll() {
 
         removeInHistoryFromRepository(taskRepository.keySet());
         removeInHistoryFromRepository(epicRepository.keySet());
@@ -82,11 +79,9 @@ public class InMemoryTaskManager implements TaskManager {
         epicRepository.clear();
         subTaskRepository.clear();
 
-        if (taskRepository.isEmpty() && epicRepository.isEmpty() && subTaskRepository.isEmpty()) {
-            return true;
-        }
+        if (!taskRepository.isEmpty() && !epicRepository.isEmpty() && !subTaskRepository.isEmpty()) {
         System.out.println("Что-то пошло не так.");
-        return false;
+        }
     }
 
     @Override
@@ -215,18 +210,17 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public boolean removeTaskById(Integer id) {
+    public void removeTaskById(Integer id) {
         if (taskRepository.containsKey(id)) {
             historyManager.remove(id);
             taskRepository.remove(id);
-            return true;
-        }
+        }else {
         printErrorIdTask("Задачи с id = %d нет.\n", id);
-        return false;
+        }
     }
 
     @Override
-    public boolean removeEpicById(Integer id) {
+    public void removeEpicById(Integer id) {
         if (epicRepository.containsKey(id)) {
             Epic task = epicRepository.get(id);
             for (int i = 0; i < task.getSubTasks().size(); i++) {
@@ -235,22 +229,22 @@ public class InMemoryTaskManager implements TaskManager {
             }
             historyManager.remove(id);
             epicRepository.remove(id);
-            return true;
+
         }
         printErrorIdTask("Задачи с id = %d нет.\n", id);
-        return false;
+
     }
 
     @Override
-    public boolean removeSubTask(Integer id) {
+    public void removeSubTask(Integer id) {
         if (subTaskRepository.containsKey(id)) {
             historyManager.remove(id);
             removeSubtaskInEpic(id);
             subTaskRepository.remove(id);
-            return true;
+
         }
         printErrorIdTask("Задачи с id = %d нет.\n", id);
-        return false;
+
     }
 
 
@@ -281,27 +275,23 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public boolean removeTaskMap() {
+    public void removeTaskMap() {
         removeInHistoryFromRepository(taskRepository.keySet());
         taskRepository.clear();
-        if (taskRepository.isEmpty()) {
-            return true;
-        }
+        if (!taskRepository.isEmpty()) {
         System.out.println("Что-то пошло не так.");
-        return false;
+        }
     }
 
     @Override
-    public boolean removeEpicMap() {
+    public void removeEpicMap() {
         removeInHistoryFromRepository(epicRepository.keySet());
         removeInHistoryFromRepository(subTaskRepository.keySet());
         epicRepository.clear();
         subTaskRepository.clear();
-        if (taskRepository.isEmpty() && subTaskRepository.isEmpty()) {
-            return true;
-        }
+        if (!taskRepository.isEmpty() && !subTaskRepository.isEmpty()) {
         System.out.println("Что-то пошло не так.");
-        return false;
+        }
     }
 
     private void removeInHistoryFromRepository(Set<Integer> subTaskRepository) {
@@ -311,16 +301,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public boolean removeSubTaskMap() {
+    public void removeSubTaskMap() {
         for (Epic epic : epicRepository.values()) {
             epic.setSubTasks(new ArrayList<>());
         }
         subTaskRepository.clear();
-        if (subTaskRepository.isEmpty()) {
-            return true;
-        }
+        if (!subTaskRepository.isEmpty()) {
         System.out.println("Что-то пошло не так.");
-        return false;
+        }
     }
 
     @Override
