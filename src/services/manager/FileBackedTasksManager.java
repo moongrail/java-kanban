@@ -5,10 +5,10 @@ import models.task.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 import static models.task.TaskType.EPIC;
 import static models.task.TaskType.TASK;
@@ -90,10 +90,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static FileBackedTasksManager loadFromFile(File file) {
         boolean firstLine = true;
+
+        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
+
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            File fileToRecovered = Files.createFile(Path.of("resources", "recovered_history_" +
-                    LocalDate.now() + UUID.randomUUID() + ".cvs")).toFile();
-            FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(fileToRecovered);
             while (reader.ready()) {
                 String line = reader.readLine();
                 if (firstLine) {
@@ -112,39 +112,39 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 switch (type) {
                     case TASK:
                         Task task = fromString(line);
-                        fileBackedTasksManager.addTask( task);
+                        fileBackedTasksManager.taskRepository.put(task.getId(), task);
                         break;
                     case EPIC:
                         Epic epic = (Epic) fromString(line);
-                        fileBackedTasksManager.addEpic( epic);
+                        fileBackedTasksManager.epicRepository.put(epic.getId(), epic);
                         break;
                     case SUBTASK:
                         SubTask subTask = (SubTask) fromString(line);
-                        fileBackedTasksManager.addSubTask(subTask.getIdEpic(), subTask);
+                        fileBackedTasksManager.subTaskRepository.put(subTask.getId(), subTask);
                         break;
                     default:
                         throw new IllegalStateException("Unexpected value: " + splitCurrentLine[1]);
                 }
             }
-//            recoverInheritanceEpicsSubtask(fileBackedTasksManager);
-            return fileBackedTasksManager;
+            if (fileBackedTasksManager.subTaskRepository.size() > 0) {
+                recoverInheritanceEpicsSubtask(fileBackedTasksManager);
+            }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка чтения файла: " + e.getMessage());
         }
+        return fileBackedTasksManager;
     }
 
     private static void recoverInheritanceEpicsSubtask(FileBackedTasksManager fileBackedTasksManager) {
         Epic updateEpic = null;
 
         for (SubTask entry : fileBackedTasksManager.subTaskRepository.values()) {
-            if (fileBackedTasksManager.epicRepository.containsKey(entry.getIdEpic())) {
-                updateEpic = fileBackedTasksManager.epicRepository.get(entry.getIdEpic());
-                List<SubTask> subTasks = updateEpic.getSubTasks();
-                subTasks.add(entry);
-                updateEpic.setSubTasks(subTasks);
-            }
+            updateEpic = fileBackedTasksManager.epicRepository.get(entry.getIdEpic());
+            List<SubTask> subTasks = updateEpic.getSubTasks();
+            subTasks.add(entry);
+            updateEpic.setSubTasks(subTasks);
         }
-            fileBackedTasksManager.updateEpic(updateEpic);
+        fileBackedTasksManager.updateEpic(updateEpic);
     }
 
     private static void recoverHistoryManager(FileBackedTasksManager fileBackedTasksManager, String line) {

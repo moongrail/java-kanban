@@ -57,12 +57,13 @@ public class Main {
         printHistory(taskManager.getHistory());
 //        taskManager.removeSubTask(3);
         taskManager.removeEpicById(1);
-
+        System.out.println("############### ОРИГИНАЛЬНАЯ ИСТОРИЯ #################");
+        printHistory(taskManager.getHistory());
         FileBackedTasksManager recoveredFileBackedTasksManager = FileBackedTasksManager
                 .loadFromFile(new File(String.valueOf(resources)));
 
-        System.out.println("###########################################");
-//        printHistory(taskManager.getHistory());
+        System.out.println("################ ВОССТАНОВЛЕННАЯ ИСТОРИЯ ###################");
+        printHistory(recoveredFileBackedTasksManager.getHistory());
     }
 
     private static TaskManager getFileBackedTaskManagersAfterTestExistFile(Path resources) {
