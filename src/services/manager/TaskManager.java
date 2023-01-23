@@ -16,12 +16,12 @@ public interface TaskManager {
     Task getTaskById(Integer id);
     Epic getEpicById(Integer id);
     SubTask getSubTaskById(Integer id);
-    Task addTask(Task task);
-    Epic addEpic(Epic task);
-    SubTask addSubTask(Integer idEpic, SubTask subTask);
-    Task updateTask(Task task);
-    Epic updateEpic(Epic task);
-    SubTask updateSubTask(SubTask task);
+    void addTask(Task task);
+    void addEpic(Epic task);
+    void addSubTask(Integer idEpic, SubTask subTask);
+    void updateTask(Task task);
+    void updateEpic(Epic task);
+    void updateSubTask(SubTask task);
     void removeTaskById(Integer id);
     void removeEpicById(Integer id);
     void removeSubTask(Integer id);

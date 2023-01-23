@@ -56,7 +56,7 @@ public class Main {
         System.out.println("###########################################");
         printHistory(taskManager.getHistory());
 //        taskManager.removeSubTask(3);
-//        taskManager.removeEpicById(1);
+        taskManager.removeEpicById(1);
 
         FileBackedTasksManager recoveredFileBackedTasksManager = FileBackedTasksManager
                 .loadFromFile(new File(String.valueOf(resources)));

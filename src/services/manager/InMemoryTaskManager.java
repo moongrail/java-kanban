@@ -80,7 +80,7 @@ public class InMemoryTaskManager implements TaskManager {
         subTaskRepository.clear();
 
         if (!taskRepository.isEmpty() && !epicRepository.isEmpty() && !subTaskRepository.isEmpty()) {
-        System.out.println("Что-то пошло не так.");
+            System.out.println("Что-то пошло не так.");
         }
     }
 
@@ -118,20 +118,18 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task addTask(Task task) {
+    public void addTask(Task task) {
         taskRepository.put(task.getId(), task);
-        return taskRepository.get(task.getId());
     }
 
     @Override
-    public Epic addEpic(Epic task) {
+    public void addEpic(Epic task) {
         task.setStatus(statusManager.getEpicStatus(task.getSubTasks()));
         epicRepository.put(task.getId(), task);
-        return epicRepository.get(task.getId());
     }
 
     @Override
-    public SubTask addSubTask(Integer idEpic, SubTask subTask) {
+    public void addSubTask(Integer idEpic, SubTask subTask) {
         subTaskRepository.put(subTask.getId(), subTask);
 
         Epic taskEpic = epicRepository.get(idEpic);
@@ -142,11 +140,10 @@ public class InMemoryTaskManager implements TaskManager {
             taskEpic.setSubTasks(subTasks);
             epicRepository.put(taskEpic.getId(), taskEpic);
         }
-        return subTask;
     }
 
     @Override
-    public Task updateTask(Task task) {
+    public void updateTask(Task task) {
         Task tempTask = taskRepository.get(task.getId());
 
         if (tempTask != null) {
@@ -155,14 +152,14 @@ public class InMemoryTaskManager implements TaskManager {
             tempTask.setDescription(task.getDescription());
             tempTask.setStatus(task.getStatus());
             taskRepository.put(task.getId(), tempTask);
-            return taskRepository.get(task.getId());
+            taskRepository.get(task.getId());
+        } else {
+            printErrorIdTask("Задачи с id = %d нет.\n", task.getId());
         }
-        printErrorIdTask("Задачи с id = %d нет.\n", task.getId());
-        return null;
     }
 
     @Override
-    public Epic updateEpic(Epic updateEpic) {
+    public void updateEpic(Epic updateEpic) {
         Epic tempEpic = epicRepository.get(updateEpic.getId());
 
         if (tempEpic != null) {
@@ -174,14 +171,13 @@ public class InMemoryTaskManager implements TaskManager {
 
             epicRepository.put(updateEpic.getId(), tempEpic);
 
-            return epicRepository.get(updateEpic.getId());
+        } else {
+            printErrorIdTask("Задачи с id = %d нет.\n", updateEpic.getId());
         }
-        printErrorIdTask("Задачи с id = %d нет.\n", updateEpic.getId());
-        return null;
     }
 
     @Override
-    public SubTask updateSubTask(SubTask task) {
+    public void updateSubTask(SubTask task) {
         SubTask oldSubTask = subTaskRepository.get(task.getId());
 
         if (oldSubTask != null) {
@@ -203,10 +199,9 @@ public class InMemoryTaskManager implements TaskManager {
             epicRepository.put(taskEpic.getId(), taskEpic);
             subTaskRepository.put(task.getId(), newSubtask);
 
-            return subTaskRepository.get(task.getId());
+        } else {
+            printErrorIdTask("Задачи с id = %d нет.\n", task.getId());
         }
-        printErrorIdTask("Задачи с id = %d нет.\n", task.getId());
-        return null;
     }
 
     @Override
@@ -214,8 +209,8 @@ public class InMemoryTaskManager implements TaskManager {
         if (taskRepository.containsKey(id)) {
             historyManager.remove(id);
             taskRepository.remove(id);
-        }else {
-        printErrorIdTask("Задачи с id = %d нет.\n", id);
+        } else {
+            printErrorIdTask("Задачи с id = %d нет.\n", id);
         }
     }
 
@@ -230,9 +225,9 @@ public class InMemoryTaskManager implements TaskManager {
             historyManager.remove(id);
             epicRepository.remove(id);
 
+        } else {
+            printErrorIdTask("Задачи с id = %d нет.\n", id);
         }
-        printErrorIdTask("Задачи с id = %d нет.\n", id);
-
     }
 
     @Override
@@ -242,9 +237,9 @@ public class InMemoryTaskManager implements TaskManager {
             removeSubtaskInEpic(id);
             subTaskRepository.remove(id);
 
+        } else {
+            printErrorIdTask("Задачи с id = %d нет.\n", id);
         }
-        printErrorIdTask("Задачи с id = %d нет.\n", id);
-
     }
 
 
@@ -279,7 +274,7 @@ public class InMemoryTaskManager implements TaskManager {
         removeInHistoryFromRepository(taskRepository.keySet());
         taskRepository.clear();
         if (!taskRepository.isEmpty()) {
-        System.out.println("Что-то пошло не так.");
+            System.out.println("Что-то пошло не так.");
         }
     }
 
@@ -290,7 +285,7 @@ public class InMemoryTaskManager implements TaskManager {
         epicRepository.clear();
         subTaskRepository.clear();
         if (!taskRepository.isEmpty() && !subTaskRepository.isEmpty()) {
-        System.out.println("Что-то пошло не так.");
+            System.out.println("Что-то пошло не так.");
         }
     }
 
@@ -307,7 +302,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         subTaskRepository.clear();
         if (!subTaskRepository.isEmpty()) {
-        System.out.println("Что-то пошло не так.");
+            System.out.println("Что-то пошло не так.");
         }
     }
 
