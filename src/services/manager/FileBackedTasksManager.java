@@ -46,25 +46,21 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private void save() {
         try (Writer writer = new FileWriter(file, StandardCharsets.UTF_8)) {
             writer.write("id,type,name,status,description,epic\n");
-            HashMap<Integer, String> allTasksMap = new HashMap<>();
             HashMap<Integer, Task> tasksMap = super.getTaskRepository();
             for (Integer id : tasksMap.keySet()) {
-                allTasksMap.put(id, toString(tasksMap.get(id)));
+                writer.write(String.format("%s\n", toString(tasksMap.get(id))));
             }
 
             HashMap<Integer, Epic> epicsMap = super.getEpicRepository();
             for (Integer id : epicsMap.keySet()) {
-                allTasksMap.put(id, toString(epicsMap.get(id)));
+                writer.write(String.format("%s\n", toString(epicsMap.get(id))));
             }
 
-            HashMap<Integer, SubTask> subtasks = super.getSubTaskRepository();
-            for (Integer id : subtasks.keySet()) {
-                allTasksMap.put(id, toString(subtasks.get(id)));
+            HashMap<Integer, SubTask> subtasksMap = super.getSubTaskRepository();
+            for (Integer id : subtasksMap.keySet()) {
+                writer.write(String.format("%s\n", toString(subtasksMap.get(id))));
             }
 
-            for (String value : allTasksMap.values()) {
-                writer.write(String.format("%s\n", value));
-            }
             writer.write("\n\n");
             writer.write(historyToString(this.getHistoryManager()));
 
@@ -144,8 +140,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             subTasks.add(entry);
             updateEpic.setSubTasks(subTasks);
         }
-        if (updateEpic!=null) {
-        fileBackedTasksManager.updateEpic(updateEpic);
+        if (updateEpic != null) {
+            fileBackedTasksManager.updateEpic(updateEpic);
         }
     }
 
