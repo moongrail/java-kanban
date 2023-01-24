@@ -144,7 +144,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             subTasks.add(entry);
             updateEpic.setSubTasks(subTasks);
         }
+        if (updateEpic!=null) {
         fileBackedTasksManager.updateEpic(updateEpic);
+        }
     }
 
     private static void recoverHistoryManager(FileBackedTasksManager fileBackedTasksManager, String line) {
