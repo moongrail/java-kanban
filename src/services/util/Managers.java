@@ -1,8 +1,8 @@
 package services.util;
 
 import services.manager.*;
-import services.manager.historyManager.HistoryManager;
-import services.manager.historyManager.InMemoryHistoryManager;
+import services.manager.history.HistoryManager;
+import services.manager.history.InMemoryHistoryManager;
 
 import java.io.File;
 

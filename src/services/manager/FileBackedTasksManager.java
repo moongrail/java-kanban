@@ -2,7 +2,7 @@ package services.manager;
 
 import exceptions.ManagerSaveException;
 import models.task.*;
-import services.manager.historyManager.HistoryManager;
+import services.manager.history.HistoryManager;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
