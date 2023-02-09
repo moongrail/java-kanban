@@ -1,10 +1,7 @@
 package test.services.manager;
 
 import exceptions.ManagerSaveException;
-import models.task.Epic;
-import models.task.SubTask;
-import models.task.TaskStatus;
-import models.task.TaskType;
+import models.task.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,10 +33,25 @@ class FileBackedTasksManagerTest<T extends TaskManager> extends TaskManagerTest<
     }
 
     @Test
+    public void throwManagersSaveExceptionWhenCreatedFileManager() {
+        ManagerSaveException exception = assertThrows(ManagerSaveException.class,
+                () -> new FileBackedTasksManager(new File("FILE")));
+        assertEquals("Ошибка чтения файла: FILE", exception.getMessage());
+    }
+
+    @Test
     public void checkWorkFromStringFileLine() {
-            assertDoesNotThrow(() -> (Epic) FileBackedTasksManager.fromString("3,EPIC,test,NEW,test,"));
-            assertDoesNotThrow(() -> FileBackedTasksManager.fromString("4,TASK,test,NEW,test,"));
-            assertDoesNotThrow(() -> (SubTask) FileBackedTasksManager.fromString("5,SUBTASK,test,NEW,test,5,"));
+        Epic testEpic = new Epic(3, TaskType.EPIC, "test", TaskStatus.NEW, "test");
+        Task testTask = new Task(4, TaskType.TASK, "test", TaskStatus.NEW, "test");
+        SubTask testSubtask = new SubTask(5, TaskType.SUBTASK, "test", TaskStatus.NEW, "test", 3);
+
+        Epic epic = (Epic) FileBackedTasksManager.fromString("3,EPIC,test,NEW,test,");
+        Task task = FileBackedTasksManager.fromString("4,TASK,test,NEW,test,");
+        SubTask subTask = (SubTask) FileBackedTasksManager.fromString("5,SUBTASK,test,NEW,test,3");
+
+        assertEquals(testEpic, epic);
+        assertEquals(testSubtask, subTask);
+        assertEquals(testTask, task);
     }
 
     @Test
@@ -53,7 +65,7 @@ class FileBackedTasksManagerTest<T extends TaskManager> extends TaskManagerTest<
     public void checkSaveMethodWriteCorrectly() {
         try {
             super.addDataInRepositoriesSize10();
-            //Я не совсем понимаю что именно то хотят у меня? Что мне проверить. В общем, тестами я покрыл больше 80%.
+            //Я не совсем понимаю что именно то хотят от меня? Что мне проверить. В общем, тестами я покрыл больше 80%.
             assertEquals(13, Files.readAllLines(FILE.toPath()).size());
             assertEquals(10, taskManager.getAllMap().size());
             assertTrue(taskManager.getHistory().isEmpty());
