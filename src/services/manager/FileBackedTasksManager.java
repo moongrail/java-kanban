@@ -70,7 +70,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private <T extends Task> String toString(T task) {
+    public static  <T extends Task> String toString(T task) {
         try {
             if (task.getType() == TASK || task.getType() == EPIC) {
                 return String.format("%d,%s,%s,%s,%s,", task.getId(), task.getType(), task.getTitle(), task.getStatus()
