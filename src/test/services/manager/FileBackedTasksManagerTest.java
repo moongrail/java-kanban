@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("FileBackedTasksManager default test.")
 class FileBackedTasksManagerTest<T extends TaskManager> extends TaskManagerTest<T> {
-    private static final Path RESOURCES = Path.of("resources/test", "history-test.csv");
+    private static final Path RESOURCES = Path.of("resources", "test", "history.csv");
 
     private static final File FILE = getOrCreateFileAndDir(RESOURCES);
 
@@ -58,9 +58,9 @@ class FileBackedTasksManagerTest<T extends TaskManager> extends TaskManagerTest<
     public void checkWorkToStringFileLine() {
         String epic = FileBackedTasksManager
                 .toString(new Epic(3, TaskType.EPIC, "test", TaskStatus.NEW, "test"));
-        String task =  FileBackedTasksManager
+        String task = FileBackedTasksManager
                 .toString(new Task(4, TaskType.TASK, "test", TaskStatus.NEW, "test"));
-        String subTask =  FileBackedTasksManager
+        String subTask = FileBackedTasksManager
                 .toString(new SubTask(5, TaskType.SUBTASK, "test", TaskStatus.NEW, "test", 3));
 
         assertEquals("3,EPIC,test,NEW,test,", epic);
@@ -118,9 +118,9 @@ class FileBackedTasksManagerTest<T extends TaskManager> extends TaskManagerTest<
     }
 
     private static File getOrCreateFileAndDir(Path resources) {
-        File dir = Path.of("resources/test").toFile();
+        File dir = Path.of("resources", "test").toFile();
         if (!dir.exists()) {
-            dir.mkdir();
+            dir.mkdirs();
         }
         Path path = null;
         File file = null;
