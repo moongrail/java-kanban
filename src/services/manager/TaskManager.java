@@ -31,5 +31,5 @@ public interface TaskManager {
     void removeSubTaskMap();
     List<SubTask> getSubTasksByEpic(Epic epic);
     List<Task> getHistory();
-
+    List<Task> getPrioritizedTasks();
 }

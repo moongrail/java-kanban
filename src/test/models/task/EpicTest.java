@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 import services.status.StatusManager;
 import services.status.StatusManagerImpl;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,14 +23,14 @@ class EpicTest {
     private final StatusManager statusManager = new StatusManagerImpl();
 
     @Test
-    public void whenEpicHaveEmptySubtaskList(){
+    public void whenEpicHaveEmptySubtaskList() {
         Epic epic = new Epic();
         assertNull(epic.getSubTasks());
     }
 
     @Test
-    public void whenInEpicAllSubtasksHaveStatusNew(){
-        Epic epic = new Epic(1, TaskType.EPIC,"test", TaskStatus.NEW,"test");
+    public void whenInEpicAllSubtasksHaveStatusNew() {
+        Epic epic = new Epic(1, TaskType.EPIC, "test", TaskStatus.NEW, "test");
         epic.setSubTasks(getSubTasksList(TaskStatus.NEW));
         epic.setStatus(statusManager.getEpicStatus(epic.getSubTasks()));
 
@@ -35,8 +38,10 @@ class EpicTest {
     }
 
     @Test
-    public void whenInEpicAllSubtasksHaveStatusDone(){
-        Epic epic = new Epic(1, TaskType.EPIC,"test", TaskStatus.NEW,"test");
+    public void whenInEpicAllSubtasksHaveStatusDone() {
+        Epic epic = new Epic(1, TaskType.EPIC, "test", TaskStatus.NEW, "test",
+                Duration.of(1, ChronoUnit.DAYS),
+                LocalDateTime.of(2021, 1, 1, 0, 0));
         epic.setSubTasks(getSubTasksList(TaskStatus.DONE));
         epic.setStatus(statusManager.getEpicStatus(epic.getSubTasks()));
 
@@ -44,8 +49,10 @@ class EpicTest {
     }
 
     @Test
-    public void whenInEpicAllSubtasksHaveStatusInProgress(){
-        Epic epic = new Epic(1, TaskType.EPIC,"test", TaskStatus.NEW,"test");
+    public void whenInEpicAllSubtasksHaveStatusInProgress() {
+        Epic epic = new Epic(1, TaskType.EPIC, "test", TaskStatus.NEW, "test",
+                Duration.of(1, ChronoUnit.DAYS),
+                LocalDateTime.of(2021, 1, 1, 0, 0));
         epic.setSubTasks(getSubTasksList(TaskStatus.IN_PROGRESS));
         epic.setStatus(statusManager.getEpicStatus(epic.getSubTasks()));
 
@@ -53,11 +60,13 @@ class EpicTest {
     }
 
     @Test
-    public void whenEpicHaveStatusInProgressIfHaveOneStatusDone(){
-        Epic epic = new Epic(1, TaskType.EPIC,"test", TaskStatus.NEW,"test");
+    public void whenEpicHaveStatusInProgressIfHaveOneStatusDone() {
+        Epic epic = new Epic(1, TaskType.EPIC, "test", TaskStatus.NEW, "test");
 
         List<SubTask> subTasksList = new ArrayList<>();
-        subTasksList.add(new SubTask(4, TaskType.SUBTASK, "test", TaskStatus.DONE, "test", 1));
+        subTasksList.add(new SubTask(4, TaskType.SUBTASK, "test", TaskStatus.DONE, "test",
+                Duration.of(1, ChronoUnit.DAYS),
+                LocalDateTime.of(2021, 1, 1, 0, 0), 1));
         subTasksList.addAll(getSubTasksList(TaskStatus.NEW));
 
         epic.setSubTasks(subTasksList);
@@ -65,8 +74,14 @@ class EpicTest {
 
         assertEquals(epic.getStatus(), TaskStatus.IN_PROGRESS);
     }
-    public static List<SubTask> getSubTasksList(TaskStatus status){
-        return List.of(new SubTask(2, TaskType.SUBTASK, "test", status, "test", 1)
-                , new SubTask(3, TaskType.SUBTASK, "test", status, "test", 1));
+
+    public static List<SubTask> getSubTasksList(TaskStatus status) {
+        return List.of(new SubTask(2, TaskType.SUBTASK, "test", status, "test",
+                        Duration.of(1, ChronoUnit.DAYS),
+                        LocalDateTime.of(2021, 1, 1, 0, 0), 1),
+                new SubTask(3, TaskType.SUBTASK, "test", status, "test",
+                        Duration.of(1, ChronoUnit.DAYS),
+                        LocalDateTime.of(2021, 1, 1, 0, 0)
+                        , 1));
     }
 }

@@ -7,6 +7,7 @@ import services.manager.history.HistoryManager;
 import services.status.StatusManager;
 import services.status.StatusManagerImpl;
 import services.util.Managers;
+import services.util.TimeManagerUtil;
 
 import java.util.*;
 
@@ -28,6 +29,27 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public List<Task> getPrioritizedTasks() {
+        HashMap<Integer, Task> allMap = getAllMap();
+        PriorityQueue<Task> sorted = new PriorityQueue<>(Comparator.comparing(Task::getStartTime));
+        List<Task> tasks = new ArrayList<>();
+        for (Task task : allMap.values()) {
+            if (task.getStartTime() == null) {
+                tasks.add(task);
+            } else {
+                sorted.add(task);
+            }
+        }
+        if (!sorted.isEmpty()) {
+            sorted.comparator();
+            List<Task> collect = new ArrayList<>(sorted);
+            collect.addAll(tasks);
+            return collect;
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
     public HashMap<Integer, Task> getAllMap() {
         HashMap<Integer, Task> allMap = new HashMap<>();
 
@@ -38,7 +60,6 @@ public class InMemoryTaskManager implements TaskManager {
         if (!allMap.isEmpty()) {
             return allMap;
         }
-        System.out.println("Список задач пуст.");
         return new HashMap<>();
     }
 
@@ -120,88 +141,136 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addTask(Task task) {
-        taskRepository.put(task.getId(), task);
+        if (task.getStartTime() == null) {
+            taskRepository.put(task.getId(), task);
+        } else if (TimeManagerUtil.checkSameStartAndProgressTimeTasks(task, getAllMap())) {
+            taskRepository.put(task.getId(), task);
+        } else {
+            System.out.println("Время выполнения таска совпадают с другими задачами.");
+        }
     }
 
     @Override
     public void addEpic(Epic task) {
-        task.setStatus(statusManager.getEpicStatus(task.getSubTasks()));
-        epicRepository.put(task.getId(), task);
+        if (task.getStartTime() == null) {
+            task.setStatus(statusManager.getEpicStatus(task.getSubTasks()));
+            epicRepository.put(task.getId(), task);
+        } else if (TimeManagerUtil.checkSameStartAndProgressTimeTasks(task, getAllMap())) {
+            task.setStatus(statusManager.getEpicStatus(task.getSubTasks()));
+            epicRepository.put(task.getId(), task);
+        } else {
+            System.out.println("Время выполнения таска совпадают с другими задачами.");
+        }
     }
 
     @Override
     public void addSubTask(Integer idEpic, SubTask subTask) {
-        subTaskRepository.put(subTask.getId(), subTask);
+        if (TimeManagerUtil.checkSameStartAndProgressTimeTasks(subTask, getAllMap())) {
+            subTaskRepository.put(subTask.getId(), subTask);
 
-        Epic taskEpic = epicRepository.get(idEpic);
-        if (taskEpic != null) {
-            List<SubTask> subTasks = taskEpic.getSubTasks();
-            subTasks.add(subTask);
-            taskEpic.setStatus(statusManager.getEpicStatus(taskEpic.getSubTasks()));
-            taskEpic.setSubTasks(subTasks);
-            epicRepository.put(taskEpic.getId(), taskEpic);
+            Epic taskEpic = epicRepository.get(idEpic);
+            if (taskEpic != null) {
+                List<SubTask> subTasks = taskEpic.getSubTasks();
+                subTasks.add(subTask);
+                taskEpic.setStatus(statusManager.getEpicStatus(taskEpic.getSubTasks()));
+                taskEpic.setSubTasks(subTasks);
+                taskEpic.setStartTime(TimeManagerUtil.getStartTimeForEpic(subTasks));
+                taskEpic.setEndTime(TimeManagerUtil.getEndTimeForEpic(subTasks));
+                epicRepository.put(taskEpic.getId(), taskEpic);
+            }
+        } else {
+            System.out.println("Время выполнения таска совпадают с другими задачами.");
         }
     }
 
     @Override
     public void updateTask(Task task) {
-        Task tempTask = taskRepository.get(task.getId());
+        if (TimeManagerUtil.checkSameStartAndProgressTimeTasks(task, getAllMap())) {
+            Task tempTask = taskRepository.get(task.getId());
 
-        if (tempTask != null) {
-            tempTask.setId(task.getId());
-            tempTask.setTitle(task.getTitle());
-            tempTask.setDescription(task.getDescription());
-            tempTask.setStatus(task.getStatus());
-            taskRepository.put(task.getId(), tempTask);
-            taskRepository.get(task.getId());
+            if (tempTask != null) {
+                tempTask.setId(task.getId());
+                tempTask.setTitle(task.getTitle());
+                tempTask.setDescription(task.getDescription());
+                tempTask.setStatus(task.getStatus());
+                if (task.getStartTime() != null && task.getDuration() != null) {
+                    tempTask.setDuration(task.getDuration());
+                    tempTask.setStartTime(task.getStartTime());
+                    tempTask.setEndTime(task.getStartTime().plus(task.getDuration()));
+                }
+                taskRepository.put(task.getId(), tempTask);
+            } else {
+                printErrorIdTask("Задачи с id = %d нет.\n", task.getId());
+            }
         } else {
-            printErrorIdTask("Задачи с id = %d нет.\n", task.getId());
+            System.out.println("Время выполнения таска совпадают с другими задачами.");
         }
     }
 
     @Override
     public void updateEpic(Epic updateEpic) {
-        Epic tempEpic = epicRepository.get(updateEpic.getId());
+        if (TimeManagerUtil.checkSameStartAndProgressTimeTasks(updateEpic, getAllMap())) {
+            Epic tempEpic = epicRepository.get(updateEpic.getId());
 
-        if (tempEpic != null) {
-            tempEpic.setId(updateEpic.getId());
-            tempEpic.setTitle(updateEpic.getTitle());
-            tempEpic.setDescription(updateEpic.getDescription());
-            tempEpic.setSubTasks(updateEpic.getSubTasks());
-            tempEpic.setStatus(statusManager.getEpicStatus(updateEpic.getSubTasks()));
+            if (tempEpic != null) {
+                tempEpic.setId(updateEpic.getId());
+                tempEpic.setTitle(updateEpic.getTitle());
+                tempEpic.setDescription(updateEpic.getDescription());
+                tempEpic.setSubTasks(updateEpic.getSubTasks());
+                tempEpic.setStatus(statusManager.getEpicStatus(updateEpic.getSubTasks()));
 
-            epicRepository.put(updateEpic.getId(), tempEpic);
+                if (updateEpic.getStartTime() != null && updateEpic.getDuration() != null) {
+                    tempEpic.setDuration(updateEpic.getDuration());
+                    tempEpic.setStartTime(updateEpic.getStartTime());
+                    tempEpic.setEndTime(updateEpic.getStartTime().plus(updateEpic.getDuration()));
+                }
 
+                epicRepository.put(updateEpic.getId(), tempEpic);
+            } else {
+                printErrorIdTask("Задачи с id = %d нет.\n", updateEpic.getId());
+            }
         } else {
-            printErrorIdTask("Задачи с id = %d нет.\n", updateEpic.getId());
+            System.out.println("Время выполнения таска совпадают с другими задачами.");
         }
     }
 
     @Override
     public void updateSubTask(SubTask task) {
-        SubTask oldSubTask = subTaskRepository.get(task.getId());
+        if (TimeManagerUtil.checkSameStartAndProgressTimeTasks(task, getAllMap())) {
+            SubTask oldSubTask = subTaskRepository.get(task.getId());
 
-        if (oldSubTask != null) {
-            SubTask newSubtask = new SubTask();
+            if (oldSubTask != null) {
+                SubTask newSubtask = new SubTask();
 
-            newSubtask.setId(task.getId());
-            newSubtask.setTitle(task.getTitle());
-            newSubtask.setDescription(task.getDescription());
-            newSubtask.setIdEpic(task.getIdEpic());
-            newSubtask.setStatus(task.getStatus());
+                newSubtask.setId(task.getId());
+                newSubtask.setTitle(task.getTitle());
+                newSubtask.setDescription(task.getDescription());
+                newSubtask.setIdEpic(task.getIdEpic());
+                newSubtask.setStatus(task.getStatus());
+                if (task.getStartTime() != null && task.getDuration() != null) {
+                    newSubtask.setDuration(task.getDuration());
+                    newSubtask.setStartTime(task.getStartTime());
+                    newSubtask.setEndTime(task.getStartTime().plus(task.getDuration()));
+                }
+                Epic taskEpic = epicRepository.get(newSubtask.getIdEpic());
+                List<SubTask> subTasks = taskEpic.getSubTasks();
+                subTasks.remove(oldSubTask);
+                subTasks.add(newSubtask);
+                taskEpic.setSubTasks(subTasks);
+                taskEpic.setStatus(statusManager.getEpicStatus(taskEpic.getSubTasks()));
 
-            Epic taskEpic = epicRepository.get(newSubtask.getIdEpic());
-            List<SubTask> subTasks = taskEpic.getSubTasks();
-            subTasks.remove(oldSubTask);
-            subTasks.add(newSubtask);
-            taskEpic.setSubTasks(subTasks);
-            taskEpic.setStatus(statusManager.getEpicStatus(taskEpic.getSubTasks()));
+                if (subTasks.stream().allMatch(subTask -> subTask.getStartTime() != null)) {
+                    taskEpic.setStartTime(TimeManagerUtil.getStartTimeForEpic(subTasks));
+                    taskEpic.setEndTime(TimeManagerUtil.getEndTimeForEpic(subTasks));
+                }
+                epicRepository.put(taskEpic.getId(), taskEpic);
+                subTaskRepository.put(task.getId(), newSubtask);
 
-            epicRepository.put(taskEpic.getId(), taskEpic);
-            subTaskRepository.put(task.getId(), newSubtask);
-
+            } else {
+                printErrorIdTask("Задачи с id = %d нет.\n", task.getId());
+            }
         } else {
-            printErrorIdTask("Задачи с id = %d нет.\n", task.getId());
+            System.out.println("Время выполнения таска совпадают с другими задачами.");
         }
     }
 

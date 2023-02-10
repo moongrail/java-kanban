@@ -56,9 +56,16 @@ class FileBackedTasksManagerTest<T extends TaskManager> extends TaskManagerTest<
 
     @Test
     public void checkWorkToStringFileLine() {
-        String s = FileBackedTasksManager.toString(new Epic(3, TaskType.EPIC, "test", TaskStatus.NEW,
-                "test"));
-        assertEquals("3,EPIC,test,NEW,test,", s);
+        String epic = FileBackedTasksManager
+                .toString(new Epic(3, TaskType.EPIC, "test", TaskStatus.NEW, "test"));
+        String task =  FileBackedTasksManager
+                .toString(new Task(4, TaskType.TASK, "test", TaskStatus.NEW, "test"));
+        String subTask =  FileBackedTasksManager
+                .toString(new SubTask(5, TaskType.SUBTASK, "test", TaskStatus.NEW, "test", 3));
+
+        assertEquals("3,EPIC,test,NEW,test,", epic);
+        assertEquals("4,TASK,test,NEW,test,", task);
+        assertEquals("5,SUBTASK,test,NEW,test,3", subTask);
     }
 
     @Test
@@ -83,7 +90,7 @@ class FileBackedTasksManagerTest<T extends TaskManager> extends TaskManagerTest<
             assertEquals(5, Files.readAllLines(FILE.toPath()).size());
             assertEquals(2, taskManager.getAllEpicMap().size());
         } catch (IOException e) {
-            throw new RuntimeException("Ошибка чтения файла в проверке файла на то что он не пустой: " + e);
+            throw new RuntimeException("Ошибка чтения файла в проверке файла где только Эпики: " + e);
         }
     }
 

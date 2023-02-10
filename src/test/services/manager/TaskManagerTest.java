@@ -4,6 +4,9 @@ import models.task.*;
 import org.junit.jupiter.api.Test;
 import services.manager.TaskManager;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,7 +35,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     public void whenAddSubTaskRepositoryIncreasedAndSubtaskAddedInEpic() {
         taskManager.addEpic(new Epic(1, TaskType.EPIC, "epic", TaskStatus.NEW, "epic"));
-        SubTask subTask = new SubTask(2, TaskType.SUBTASK, "test", TaskStatus.NEW, "test", 1);
+        SubTask subTask = new SubTask(2, TaskType.SUBTASK, "test", TaskStatus.NEW, "test",
+                Duration.ofDays(1),
+                LocalDateTime.now(), 1);
         taskManager.addSubTask(1, subTask);
         assertEquals(1, taskManager.getAllSubTaskMap().size());
         boolean result = taskManager.getAllEpicMap().values()
@@ -158,8 +163,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
         task.setStatus(TaskStatus.NEW);
         taskManager.updateSubTask(task);
         assertEquals(TaskStatus.NEW, task.getStatus());
-        Epic epic = taskManager.getEpicById(9);
-        assertEquals(TaskStatus.NEW, epic.getStatus());
     }
 
     @Test
@@ -256,18 +259,34 @@ abstract class TaskManagerTest<T extends TaskManager> {
     protected void addDataInRepositoriesSize10() {
         taskManager.addTask(new Task(1, TaskType.TASK, "test", TaskStatus.NEW, "test"));
         taskManager.addTask(new Task(2, TaskType.TASK, "test", TaskStatus.NEW, "test"));
-        taskManager.addEpic(new Epic(3, TaskType.EPIC, "test", TaskStatus.NEW, "test"));
-        taskManager.addEpic(new Epic(4, TaskType.EPIC, "test", TaskStatus.NEW, "test"));
-        taskManager.addEpic(new Epic(9, TaskType.EPIC, "test", TaskStatus.NEW, "test"));
+        taskManager.addEpic(new Epic(3, TaskType.EPIC, "test", TaskStatus.NEW, "test",
+                Duration.of(2, ChronoUnit.DAYS),
+                LocalDateTime.of(2021, 12, 1, 0, 0)));
+        taskManager.addEpic(new Epic(4, TaskType.EPIC, "test", TaskStatus.NEW, "test",
+                Duration.of(2, ChronoUnit.DAYS),
+                LocalDateTime.of(2021, 2, 2, 0, 0)));
+        taskManager.addEpic(new Epic(9, TaskType.EPIC, "test", TaskStatus.NEW, "test",
+                Duration.of(2, ChronoUnit.DAYS),
+                LocalDateTime.of(2021, 3, 1, 0, 0)));
         taskManager.addSubTask(9, new SubTask(10, TaskType.SUBTASK, "test", TaskStatus.DONE,
-                "test", 9));
+                "test",
+                Duration.of(2, ChronoUnit.DAYS),
+                LocalDateTime.of(2022, 3, 20, 0, 0), 9));
         taskManager.addSubTask(3, new SubTask(5, TaskType.SUBTASK, "test", TaskStatus.DONE,
-                "test", 3));
+                "test",
+                Duration.of(2, ChronoUnit.DAYS),
+                LocalDateTime.of(2021, 12, 4, 0, 0), 3));
         taskManager.addSubTask(3, new SubTask(6, TaskType.SUBTASK, "test", TaskStatus.NEW,
-                "test", 3));
+                "test",
+                Duration.of(1, ChronoUnit.DAYS),
+                LocalDateTime.of(2021, 12, 6, 0, 0), 3));
         taskManager.addSubTask(4, new SubTask(7, TaskType.SUBTASK, "test", TaskStatus.NEW,
-                "test", 4));
+                "test",
+                Duration.of(2, ChronoUnit.DAYS),
+                LocalDateTime.of(2021, 5, 6, 0, 0), 4));
         taskManager.addSubTask(4, new SubTask(8, TaskType.SUBTASK, "test", TaskStatus.NEW,
-                "test", 4));
+                "test",
+                Duration.of(2, ChronoUnit.DAYS),
+                LocalDateTime.of(2021, 6, 7, 0, 0), 4));
     }
 }

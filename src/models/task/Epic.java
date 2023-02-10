@@ -1,5 +1,7 @@
 package models.task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -13,6 +15,12 @@ public class Epic extends Task {
 
     public Epic(Integer id, TaskType type, String title, TaskStatus status, String description) {
         super(id, type, title, status, description);
+        subTasks = new ArrayList<>();
+    }
+
+    public Epic(Integer id, TaskType type, String title, TaskStatus status, String description, Duration duration,
+                LocalDateTime startTime) {
+        super(id, type, title, status, description, duration, startTime);
         subTasks = new ArrayList<>();
     }
 
