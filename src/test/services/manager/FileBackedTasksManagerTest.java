@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("FileBackedTasksManager default test.")
 class FileBackedTasksManagerTest<T extends TaskManager> extends TaskManagerTest<T> {
-    private static final Path RESOURCES = Path.of("resources", "test", "history.csv");
+    private static final Path RESOURCES = Path.of("resources", "test", "history-test.csv");
 
     private static final File FILE = getOrCreateFileAndDir(RESOURCES);
 
