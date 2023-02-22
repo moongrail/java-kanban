@@ -10,6 +10,7 @@ import services.util.Managers;
 import util.FileDataCreatorUtil;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
@@ -53,9 +54,6 @@ public class HttpTaskServer {
                 case "POST":
                     handlePostRequest(exchange, requestURI);
                     break;
-//                case "PUT":
-//                    handlePutRequest(exchange, requestURI);
-//                    break;
                 case "DELETE":
                     handleDeleteRequest(exchange, requestURI);
                     break;
@@ -65,7 +63,83 @@ public class HttpTaskServer {
         }
 
         private void handlePostRequest(HttpExchange exchange, String requestURI) {
+            switch (requestURI) {
+                case "/tasks/task":
+                    postHandleTask(exchange);
+                    break;
+                case "/tasks/epic":
+                    postHandleEpic(exchange);
+                    break;
+                case "/tasks/subtask":
+                    postHandleSubtask(exchange);
+                    break;
+                default:
+                    throw new IllegalArgumentException(String.format("Запроса по адресу %s не существует.\n"
+                            , requestURI));
+            }
+        }
 
+        private void postHandleSubtask(HttpExchange exchange) {
+            try (InputStream inputStream = exchange.getRequestBody()) {
+                String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
+                SubTask task = gson.fromJson(body, SubTask.class);
+
+                if (task == null) {
+                    writeResponse(exchange,"Ошибка добавления таска.",400);
+                    return;
+                }else if (backedTasksManager.getAllSubTaskMap().containsKey(task.getId())) {
+                    backedTasksManager.updateSubTask(task);
+                    writeResponse(exchange,"Задача обновлена.",201);
+                    return;
+                }
+
+                backedTasksManager.addSubTask(task.getIdEpic(), task);
+                writeResponse(exchange,"Задача добавлена.",201);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private void postHandleEpic(HttpExchange exchange) {
+            try (InputStream inputStream = exchange.getRequestBody()) {
+                String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
+                Epic task = gson.fromJson(body, Epic.class);
+
+                if (task == null) {
+                    writeResponse(exchange,"Ошибка добавления таска.",400);
+                    return;
+                }else if (backedTasksManager.getAllEpicMap().containsKey(task.getId())) {
+                    backedTasksManager.updateEpic(task);
+                    writeResponse(exchange,"Задача обновлена.",201);
+                    return;
+                }
+
+                backedTasksManager.addEpic(task);
+                writeResponse(exchange,"Задача добавлена.",201);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private void postHandleTask(HttpExchange exchange) {
+            try (InputStream inputStream = exchange.getRequestBody()) {
+                String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
+                Task task = gson.fromJson(body, Task.class);
+
+                if (task == null) {
+                    writeResponse(exchange,"Ошибка добавления таска.",400);
+                    return;
+                }else if (backedTasksManager.getAllTaskMap().containsKey(task.getId())) {
+                    backedTasksManager.updateTask(task);
+                    writeResponse(exchange,"Задача обновлена.",201);
+                    return;
+                }
+
+                backedTasksManager.addTask(task);
+                writeResponse(exchange,"Задача добавлена.",201);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         private void handleDeleteRequest(HttpExchange exchange, String requestURI) {
