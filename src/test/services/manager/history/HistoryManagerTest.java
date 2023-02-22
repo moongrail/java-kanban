@@ -14,7 +14,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HistoryManagerTest {
-
     private HistoryManager historyManager;
 
     @BeforeEach
@@ -31,6 +30,7 @@ class HistoryManagerTest {
     public void historyDontHaveDuplicates() {
         historyManager.add(new Task(1, TaskType.TASK, "test", TaskStatus.NEW, "test"));
         historyManager.add(new Task(1, TaskType.TASK, "test", TaskStatus.NEW, "test"));
+
         assertEquals(1, historyManager.getHistory().size());
     }
 
@@ -38,6 +38,7 @@ class HistoryManagerTest {
     public void checkHistoryReverseIteration() {
         historyManager.add(new Task(2, TaskType.TASK, "test", TaskStatus.NEW, "test"));
         historyManager.add(new Task(3, TaskType.TASK, "test", TaskStatus.NEW, "test"));
+
         assertEquals(2, historyManager.getHistory().size());
         assertArrayEquals(new int[]{3, 2}, historyManager.getHistory().stream()
                 .mapToInt(Task::getId)
@@ -47,6 +48,7 @@ class HistoryManagerTest {
     @Test
     public void removeFirstFromHistory() {
         uploadDataInHistory();
+
         historyManager.remove(1);
         assertFalse(historyManager.getHistory().stream()
                 .anyMatch(task -> task.getId().equals(1)));
@@ -56,6 +58,7 @@ class HistoryManagerTest {
     @Test
     public void removeLastFromHistory() {
         uploadDataInHistory();
+
         historyManager.remove(3);
         assertFalse(historyManager.getHistory().stream()
                 .anyMatch(task -> task.getId().equals(3)));
@@ -64,6 +67,7 @@ class HistoryManagerTest {
     @Test
     public void removeMiddleFromHistory() {
         uploadDataInHistory();
+
         historyManager.remove(2);
         assertFalse(historyManager.getHistory().stream()
                 .anyMatch(task -> task.getId().equals(2)));

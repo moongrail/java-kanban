@@ -38,6 +38,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         SubTask subTask = new SubTask(2, TaskType.SUBTASK, "test", TaskStatus.NEW, "test",
                 Duration.ofDays(1),
                 LocalDateTime.now(), 1);
+
         taskManager.addSubTask(1, subTask);
         assertEquals(1, taskManager.getAllSubTaskMap().size());
         boolean result = taskManager.getAllEpicMap().values()
@@ -121,15 +122,18 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     public void testUpdateTask() {
         addDataInRepositoriesSize10();
+
         Task task = taskManager.getTaskById(1);
         task.setStatus(TaskStatus.DONE);
         taskManager.updateTask(task);
+
         assertEquals(TaskStatus.DONE, task.getStatus());
     }
 
     @Test
     public void testUpdateWhenTaskNotExisted() {
         Task task = taskManager.getTaskById(1);
+
         assertThrows(NullPointerException.class, () -> {
             task.setStatus(TaskStatus.DONE);
             taskManager.updateTask(task);
@@ -140,15 +144,18 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     public void testUpdateEpic() {
         addDataInRepositoriesSize10();
+
         Epic task = taskManager.getEpicById(3);
         task.setTitle("UPDATE");
         taskManager.updateEpic(task);
+
         assertEquals("UPDATE", task.getTitle());
     }
 
     @Test
     public void testUpdateWhenEpicNotExisted() {
         Epic task = taskManager.getEpicById(1);
+
         assertThrows(NullPointerException.class, () -> {
             task.setStatus(TaskStatus.DONE);
             taskManager.updateEpic(task);
@@ -159,15 +166,18 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     public void testUpdateSubtask() {
         addDataInRepositoriesSize10();
+
         SubTask task = taskManager.getSubTaskById(10);
         task.setStatus(TaskStatus.NEW);
         taskManager.updateSubTask(task);
+
         assertEquals(TaskStatus.NEW, task.getStatus());
     }
 
     @Test
     public void testUpdateWhenSubtaskNotExisted() {
         SubTask task = taskManager.getSubTaskById(1);
+
         assertThrows(NullPointerException.class, () -> {
             task.setStatus(TaskStatus.DONE);
             taskManager.updateSubTask(task);
@@ -185,7 +195,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     public void testRemoveEpicIfExists() {
         addDataInRepositoriesSize10();
+
         taskManager.removeEpicById(9);
+
         assertFalse(taskManager.getAllEpicMap().containsKey(9));
         assertFalse(taskManager.getAllSubTaskMap().values().stream()
                 .anyMatch(subTask -> subTask.getIdEpic().equals(9)));
@@ -207,6 +219,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     public void testRemoveAll() {
         addDataInRepositoriesSize10();
         taskManager.removeAll();
+
         assertTrue(taskManager.getAllTaskMap().isEmpty());
         assertTrue(taskManager.getAllEpicMap().isEmpty());
         assertTrue(taskManager.getAllSubTaskMap().isEmpty());
@@ -224,6 +237,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     public void testRemoveEpicMapAndCheckWhatSubtaskMapIsEmpty() {
         addDataInRepositoriesSize10();
         taskManager.removeEpicMap();
+
         assertTrue(taskManager.getAllEpicMap().isEmpty());
         assertTrue(taskManager.getAllSubTaskMap().isEmpty());
     }

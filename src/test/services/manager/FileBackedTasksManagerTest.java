@@ -26,7 +26,6 @@ class FileBackedTasksManagerTest<T extends TaskManager> extends TaskManagerTest<
         taskManager = (T) new FileBackedTasksManager(FILE);
     }
 
-
     @Test
     public void checkSaveMethodIfFileIsEmpty() {
         assertTrue(taskManager.getAllMap().isEmpty());
@@ -36,6 +35,7 @@ class FileBackedTasksManagerTest<T extends TaskManager> extends TaskManagerTest<
     public void throwManagersSaveExceptionWhenCreatedFileManager() {
         ManagerSaveException exception = assertThrows(ManagerSaveException.class,
                 () -> new FileBackedTasksManager(new File("FILE")));
+
         assertEquals("Ошибка чтения файла: FILE", exception.getMessage());
     }
 
@@ -72,7 +72,7 @@ class FileBackedTasksManagerTest<T extends TaskManager> extends TaskManagerTest<
     public void checkSaveMethodWriteCorrectly() {
         try {
             super.addDataInRepositoriesSize10();
-            //Я не совсем понимаю что именно то хотят от меня? Что мне проверить. В общем, тестами я покрыл больше 80%.
+
             assertEquals(13, Files.readAllLines(FILE.toPath()).size());
             assertEquals(10, taskManager.getAllMap().size());
             assertTrue(taskManager.getHistory().isEmpty());
@@ -101,6 +101,7 @@ class FileBackedTasksManagerTest<T extends TaskManager> extends TaskManagerTest<
         taskManager.getTaskById(2);
 
         FileBackedTasksManager recoverFileManager = FileBackedTasksManager.loadFromFile(FILE);
+
         assertEquals(10, recoverFileManager.getAllMap().size());
         assertEquals(3, recoverFileManager.getAllEpicMap().size());
         assertEquals(5, recoverFileManager.getAllSubTaskMap().size());

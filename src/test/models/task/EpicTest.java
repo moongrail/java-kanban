@@ -31,6 +31,7 @@ class EpicTest {
     @Test
     public void whenInEpicAllSubtasksHaveStatusNew() {
         Epic epic = new Epic(1, TaskType.EPIC, "test", TaskStatus.NEW, "test");
+
         epic.setSubTasks(getSubTasksList(TaskStatus.NEW));
         epic.setStatus(statusManager.getEpicStatus(epic.getSubTasks()));
 
@@ -42,6 +43,7 @@ class EpicTest {
         Epic epic = new Epic(1, TaskType.EPIC, "test", TaskStatus.NEW, "test",
                 Duration.of(1, ChronoUnit.DAYS),
                 LocalDateTime.of(2021, 1, 1, 0, 0));
+
         epic.setSubTasks(getSubTasksList(TaskStatus.DONE));
         epic.setStatus(statusManager.getEpicStatus(epic.getSubTasks()));
 
@@ -53,6 +55,7 @@ class EpicTest {
         Epic epic = new Epic(1, TaskType.EPIC, "test", TaskStatus.NEW, "test",
                 Duration.of(1, ChronoUnit.DAYS),
                 LocalDateTime.of(2021, 1, 1, 0, 0));
+
         epic.setSubTasks(getSubTasksList(TaskStatus.IN_PROGRESS));
         epic.setStatus(statusManager.getEpicStatus(epic.getSubTasks()));
 

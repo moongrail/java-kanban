@@ -69,7 +69,6 @@ public class Main {
 
 
         taskManager.getPrioritizedTasks().stream().map(Task::getId).forEach(System.out::println);
-
     }
 
     private static TaskManager getFileBackedTaskManagersAfterTestExistFile(Path resources) {
