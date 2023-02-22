@@ -30,7 +30,7 @@ public class HttpTaskServer {
             .getDefaultFileBackedTasksManager(FileDataCreatorUtil.getOrCreateFileAndDir());
     private static final Gson gson = new Gson();
 
-    public static void main(String[] args) {
+    public static void run() {
         try {
             HttpServer httpServer = HttpServer.create(new InetSocketAddress(DEFAULT_PORT), 10);
             httpServer.createContext("/tasks", new TaskServiceHandler());
@@ -58,11 +58,12 @@ public class HttpTaskServer {
                     handleDeleteRequest(exchange, requestURI);
                     break;
                 default:
-                    throw new IllegalArgumentException("Данный метод пока не поддерживается: " + method);
+                    writeResponse(exchange, "Данный метод пока не поддерживается: " + method,
+                            400);
             }
         }
 
-        private void handlePostRequest(HttpExchange exchange, String requestURI) {
+        private void handlePostRequest(HttpExchange exchange, String requestURI) throws IOException {
             switch (requestURI) {
                 case "/tasks/task":
                     postHandleTask(exchange);
@@ -74,75 +75,12 @@ public class HttpTaskServer {
                     postHandleSubtask(exchange);
                     break;
                 default:
-                    throw new IllegalArgumentException(String.format("Запроса по адресу %s не существует.\n"
-                            , requestURI));
+                    writeResponse(exchange, String.format("Запроса по адресу %s не существует.\n"
+                            , requestURI), 400);
             }
         }
 
-        private void postHandleSubtask(HttpExchange exchange) {
-            try (InputStream inputStream = exchange.getRequestBody()) {
-                String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
-                SubTask task = gson.fromJson(body, SubTask.class);
-
-                if (task == null) {
-                    writeResponse(exchange,"Ошибка добавления таска.",400);
-                    return;
-                }else if (backedTasksManager.getAllSubTaskMap().containsKey(task.getId())) {
-                    backedTasksManager.updateSubTask(task);
-                    writeResponse(exchange,"Задача обновлена.",201);
-                    return;
-                }
-
-                backedTasksManager.addSubTask(task.getIdEpic(), task);
-                writeResponse(exchange,"Задача добавлена.",201);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        private void postHandleEpic(HttpExchange exchange) {
-            try (InputStream inputStream = exchange.getRequestBody()) {
-                String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
-                Epic task = gson.fromJson(body, Epic.class);
-
-                if (task == null) {
-                    writeResponse(exchange,"Ошибка добавления таска.",400);
-                    return;
-                }else if (backedTasksManager.getAllEpicMap().containsKey(task.getId())) {
-                    backedTasksManager.updateEpic(task);
-                    writeResponse(exchange,"Задача обновлена.",201);
-                    return;
-                }
-
-                backedTasksManager.addEpic(task);
-                writeResponse(exchange,"Задача добавлена.",201);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        private void postHandleTask(HttpExchange exchange) {
-            try (InputStream inputStream = exchange.getRequestBody()) {
-                String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
-                Task task = gson.fromJson(body, Task.class);
-
-                if (task == null) {
-                    writeResponse(exchange,"Ошибка добавления таска.",400);
-                    return;
-                }else if (backedTasksManager.getAllTaskMap().containsKey(task.getId())) {
-                    backedTasksManager.updateTask(task);
-                    writeResponse(exchange,"Задача обновлена.",201);
-                    return;
-                }
-
-                backedTasksManager.addTask(task);
-                writeResponse(exchange,"Задача добавлена.",201);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        private void handleDeleteRequest(HttpExchange exchange, String requestURI) {
+        private void handleDeleteRequest(HttpExchange exchange, String requestURI) throws IOException {
             switch (requestURI) {
                 case "/tasks":
                     deleteHandleAll(exchange);
@@ -166,8 +104,8 @@ public class HttpTaskServer {
                     deleteHandleSubTasksById(exchange);
                     break;
                 default:
-                    throw new IllegalArgumentException(String.format("Запроса по адресу %s не существует.\n"
-                            , requestURI));
+                    writeResponse(exchange, String.format("Запроса по адресу %s не существует.\n"
+                            , requestURI), 400);
             }
         }
 
@@ -204,8 +142,71 @@ public class HttpTaskServer {
                     getHandleSubtaskByEpic(exchange);
                     break;
                 default:
-                    throw new IllegalArgumentException(String.format("Запроса по адресу %s не существует.\n"
-                            , requestURI));
+                    writeResponse(exchange, String.format("Запроса по адресу %s не существует.\n"
+                            , requestURI), 404);
+            }
+        }
+
+        private void postHandleSubtask(HttpExchange exchange) {
+            try (InputStream inputStream = exchange.getRequestBody()) {
+                String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
+                SubTask task = gson.fromJson(body, SubTask.class);
+
+                if (task == null) {
+                    writeResponse(exchange, "Ошибка добавления таска.", 400);
+                    return;
+                } else if (backedTasksManager.getAllSubTaskMap().containsKey(task.getId())) {
+                    backedTasksManager.updateSubTask(task);
+                    writeResponse(exchange, "Задача обновлена.", 201);
+                    return;
+                }
+
+                backedTasksManager.addSubTask(task.getIdEpic(), task);
+                writeResponse(exchange, "Задача добавлена.", 201);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private void postHandleEpic(HttpExchange exchange) {
+            try (InputStream inputStream = exchange.getRequestBody()) {
+                String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
+                Epic task = gson.fromJson(body, Epic.class);
+
+                if (task == null) {
+                    writeResponse(exchange, "Ошибка добавления таска.", 400);
+                    return;
+                } else if (backedTasksManager.getAllEpicMap().containsKey(task.getId())) {
+                    backedTasksManager.updateEpic(task);
+                    writeResponse(exchange, "Задача обновлена.", 201);
+                    return;
+                }
+
+                backedTasksManager.addEpic(task);
+                writeResponse(exchange, "Задача добавлена.", 201);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private void postHandleTask(HttpExchange exchange) {
+            try (InputStream inputStream = exchange.getRequestBody()) {
+                String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
+                Task task = gson.fromJson(body, Task.class);
+
+                if (task == null) {
+                    writeResponse(exchange, "Ошибка добавления таска.", 400);
+                    return;
+                } else if (backedTasksManager.getAllTaskMap().containsKey(task.getId())) {
+                    backedTasksManager.updateTask(task);
+                    writeResponse(exchange, "Задача обновлена.", 201);
+                    return;
+                }
+
+                backedTasksManager.addTask(task);
+                writeResponse(exchange, "Задача добавлена.", 201);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
 
