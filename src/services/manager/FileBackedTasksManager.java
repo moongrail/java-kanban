@@ -44,7 +44,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         save();
     }
 
-    private void save() {
+    protected void save() {
         try (Writer writer = new FileWriter(file, StandardCharsets.UTF_8)) {
             writer.write("id,type,name,status,description,epic\n");
             HashMap<Integer, Task> tasksMap = super.getTaskRepository();

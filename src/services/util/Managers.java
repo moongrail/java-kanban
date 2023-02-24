@@ -19,6 +19,10 @@ public final class Managers {
         return new FileBackedTasksManager(file);
     }
 
+    public static TaskManager getDefaultHttpTasksManager(String url) {
+        return new HttpTaskManager(url);
+    }
+
     public static HistoryManager getDefaultHistory() {
         return new InMemoryHistoryManager();
     }

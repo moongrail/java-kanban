@@ -22,7 +22,13 @@ public class KVTaskClient {
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
 
-        httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+        try {
+            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String load(String key) {
@@ -46,7 +52,7 @@ public class KVTaskClient {
             HttpClient httpClient = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url + "/register"))
-                    .POST(HttpRequest.BodyPublishers.ofString(""))
+                    .GET()
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -55,5 +61,9 @@ public class KVTaskClient {
             System.out.println("Ошибка обработки данных: " + e.getMessage());
         }
         return null;
+    }
+
+    public String getApiToken() {
+        return apiToken;
     }
 }

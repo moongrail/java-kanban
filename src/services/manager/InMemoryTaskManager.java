@@ -1,5 +1,7 @@
 package services.manager;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import models.task.Epic;
 import models.task.SubTask;
 import models.task.Task;
@@ -12,11 +14,18 @@ import services.util.TimeManagerUtil;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-
+    @SerializedName("taskRepository")
+    @Expose
     protected final HashMap<Integer, Task> taskRepository;
+    @SerializedName("epicRepository")
+    @Expose
     protected final HashMap<Integer, Epic> epicRepository;
+    @SerializedName("subTaskRepository")
+    @Expose
     protected final HashMap<Integer, SubTask> subTaskRepository;
-    protected final HistoryManager historyManager;
+    @SerializedName("historyManager")
+    @Expose
+    protected HistoryManager historyManager;
 
     private final StatusManager statusManager;
 
