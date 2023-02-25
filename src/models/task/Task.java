@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
-
     private Integer id;
     private TaskType type;
     private String title;

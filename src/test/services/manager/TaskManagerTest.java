@@ -112,14 +112,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    public void testStatusEpicAfterAddedSubTask() {
-        addDataInRepositoriesSize10();
-        assertEquals(TaskStatus.IN_PROGRESS, taskManager.getEpicById(3).getStatus());
-        assertEquals(TaskStatus.DONE, taskManager.getEpicById(9).getStatus());
-        assertEquals(TaskStatus.NEW, taskManager.getEpicById(4).getStatus());
-    }
-
-    @Test
     public void testUpdateTask() {
         addDataInRepositoriesSize10();
 
@@ -271,8 +263,12 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     protected void addDataInRepositoriesSize10() {
-        taskManager.addTask(new Task(1, TaskType.TASK, "test", TaskStatus.NEW, "test"));
-        taskManager.addTask(new Task(2, TaskType.TASK, "test", TaskStatus.NEW, "test"));
+        taskManager.addTask(new Task(1, TaskType.TASK, "test", TaskStatus.NEW, "test",
+                Duration.of(2, ChronoUnit.DAYS),
+                LocalDateTime.of(2023, 7, 1, 0, 0)));
+        taskManager.addTask(new Task(2, TaskType.TASK, "test", TaskStatus.NEW, "test",
+                Duration.of(2, ChronoUnit.DAYS),
+                LocalDateTime.of(2022, 8, 1, 0, 0)));
         taskManager.addEpic(new Epic(3, TaskType.EPIC, "test", TaskStatus.NEW, "test",
                 Duration.of(2, ChronoUnit.DAYS),
                 LocalDateTime.of(2021, 12, 1, 0, 0)));

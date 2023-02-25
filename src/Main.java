@@ -7,6 +7,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         new KVServer().start();
-        HttpTaskServer.run();
+        HttpTaskServer httpTaskServer = new HttpTaskServer("http://localhost:8078");
+        httpTaskServer.start();
     }
 }

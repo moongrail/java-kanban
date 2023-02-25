@@ -1,6 +1,5 @@
 package services.manager;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import models.task.Epic;
 import models.task.SubTask;
@@ -12,19 +11,16 @@ import services.util.Managers;
 import services.util.TimeManagerUtil;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     @SerializedName("taskRepository")
-    @Expose
     protected final HashMap<Integer, Task> taskRepository;
     @SerializedName("epicRepository")
-    @Expose
     protected final HashMap<Integer, Epic> epicRepository;
     @SerializedName("subTaskRepository")
-    @Expose
     protected final HashMap<Integer, SubTask> subTaskRepository;
     @SerializedName("historyManager")
-    @Expose
     protected HistoryManager historyManager;
 
     private final StatusManager statusManager;
@@ -42,6 +38,7 @@ public class InMemoryTaskManager implements TaskManager {
         HashMap<Integer, Task> allMap = getAllMap();
         PriorityQueue<Task> sorted = new PriorityQueue<>(Comparator.comparing(Task::getStartTime));
         List<Task> tasks = new ArrayList<>();
+
         for (Task task : allMap.values()) {
             if (task.getStartTime() == null) {
                 tasks.add(task);
@@ -50,9 +47,12 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
         if (!sorted.isEmpty()) {
-            sorted.comparator();
-            List<Task> collect = new ArrayList<>(sorted);
+            List<Task> collect = sorted.stream()
+                    .sorted(Comparator.comparing(Task::getStartTime))
+                    .collect(Collectors.toList());
+
             collect.addAll(tasks);
+
             return collect;
         }
         return new ArrayList<>();

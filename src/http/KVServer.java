@@ -21,7 +21,7 @@ public class KVServer {
 
     public KVServer() throws IOException {
         apiToken = generateApiToken();
-        server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
+        server = HttpServer.create(new InetSocketAddress("localhost", PORT), 2);
         server.createContext("/register", this::register);
         server.createContext("/save", this::save);
         server.createContext("/load", this::load);
@@ -113,6 +113,10 @@ public class KVServer {
         server.start();
     }
 
+    public void stop() {
+        server.stop(0);
+    }
+
     private String generateApiToken() {
         return "" + System.currentTimeMillis();
     }
@@ -131,5 +135,9 @@ public class KVServer {
         h.getResponseHeaders().add("Content-Type", "application/json");
         h.sendResponseHeaders(200, resp.length);
         h.getResponseBody().write(resp);
+    }
+
+    public String getApiToken() {
+        return apiToken;
     }
 }

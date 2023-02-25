@@ -8,7 +8,7 @@ import com.sun.net.httpserver.HttpServer;
 import models.task.Epic;
 import models.task.SubTask;
 import models.task.Task;
-import services.manager.TaskManager;
+import services.manager.HttpTaskManager;
 import services.util.Managers;
 
 import java.io.IOException;
@@ -25,28 +25,32 @@ public class HttpTaskServer {
 
     private static final int DEFAULT_PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-    private static final TaskManager backedTasksManager = Managers
-            .getDefaultHttpTasksManager("http://localhost:8078");
-
+    private final HttpTaskManager httpTaskManager;
+    private HttpServer httpServer;
     private static final Gson gson = new GsonBuilder()
             .serializeNulls()
             .setPrettyPrinting()
             .create();
 
-//    public static void main(String[] args) throws IOException {
-//        HttpTaskServer.run();
-//    }
-    public static void run() {
+    public HttpTaskServer(String url) {
         try {
-            HttpServer httpServer = HttpServer.create(new InetSocketAddress(DEFAULT_PORT), 10);
+            httpServer = HttpServer.create(new InetSocketAddress(DEFAULT_PORT), 0);
             httpServer.createContext("/tasks", new TaskServiceHandler());
-            httpServer.start();
+            httpTaskManager = (HttpTaskManager) Managers.getDefaultHttpTasksManager(url);
         } catch (IOException e) {
             throw new RuntimeException("Ошибка на сервере: " + e.getMessage());
         }
     }
 
-    static class TaskServiceHandler implements HttpHandler {
+    public void start() {
+        httpServer.start();
+    }
+
+    public void stop() {
+        httpServer.stop(0);
+    }
+
+    protected class TaskServiceHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String method = exchange.getRequestMethod();
@@ -81,7 +85,7 @@ public class HttpTaskServer {
                     break;
                 default:
                     writeResponse(exchange, String.format("Запроса по адресу %s не существует.\n"
-                            , requestURI), 400);
+                            , requestURI), 404);
             }
         }
 
@@ -110,7 +114,7 @@ public class HttpTaskServer {
                     break;
                 default:
                     writeResponse(exchange, String.format("Запроса по адресу %s не существует.\n"
-                            , requestURI), 400);
+                            , requestURI), 404);
             }
         }
 
@@ -160,13 +164,13 @@ public class HttpTaskServer {
                 if (task == null) {
                     writeResponse(exchange, "Ошибка добавления таска.", 400);
                     return;
-                } else if (backedTasksManager.getAllSubTaskMap().containsKey(task.getId())) {
-                    backedTasksManager.updateSubTask(task);
+                } else if (httpTaskManager.getAllSubTaskMap().containsKey(task.getId())) {
+                    httpTaskManager.updateSubTask(task);
                     writeResponse(exchange, "Задача обновлена.", 201);
                     return;
                 }
 
-                backedTasksManager.addSubTask(task.getIdEpic(), task);
+                httpTaskManager.addSubTask(task.getIdEpic(), task);
                 writeResponse(exchange, "Задача добавлена.", 201);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -181,13 +185,13 @@ public class HttpTaskServer {
                 if (task == null) {
                     writeResponse(exchange, "Ошибка добавления таска.", 400);
                     return;
-                } else if (backedTasksManager.getAllEpicMap().containsKey(task.getId())) {
-                    backedTasksManager.updateEpic(task);
+                } else if (httpTaskManager.getAllEpicMap().containsKey(task.getId())) {
+                    httpTaskManager.updateEpic(task);
                     writeResponse(exchange, "Задача обновлена.", 201);
                     return;
                 }
 
-                backedTasksManager.addEpic(task);
+                httpTaskManager.addEpic(task);
                 writeResponse(exchange, "Задача добавлена.", 201);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -202,16 +206,16 @@ public class HttpTaskServer {
                 if (task == null) {
                     writeResponse(exchange, "Ошибка добавления таска.", 400);
                     return;
-                } else if (backedTasksManager.getAllTaskMap().containsKey(task.getId())) {
-                    backedTasksManager.updateTask(task);
+                } else if (httpTaskManager.getTaskRepository().containsKey(task.getId())) {
+                    httpTaskManager.updateTask(task);
                     writeResponse(exchange, "Задача обновлена.", 201);
                     return;
                 }
 
-                backedTasksManager.addTask(task);
+                httpTaskManager.addTask(task);
                 writeResponse(exchange, "Задача добавлена.", 201);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(e.getMessage());
             }
         }
 
@@ -226,13 +230,13 @@ public class HttpTaskServer {
 
                 Integer id = idFromParam.get();
 
-                if (!backedTasksManager.getAllSubTaskMap().containsKey(id)) {
+                if (!httpTaskManager.getAllSubTaskMap().containsKey(id)) {
                     writeResponse(exchange, "Введен неверный идентификатор задачи.", 400);
                     return;
                 }
 
-                backedTasksManager.removeSubTask(id);
-                writeResponse(exchange, "true", 204);
+                httpTaskManager.removeSubTask(id);
+                writeResponse(exchange, "", 204);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -249,13 +253,13 @@ public class HttpTaskServer {
 
                 Integer id = idFromParam.get();
 
-                if (!backedTasksManager.getAllEpicMap().containsKey(id)) {
+                if (!httpTaskManager.getAllEpicMap().containsKey(id)) {
                     writeResponse(exchange, "Введен неверный идентификатор задачи.", 400);
                     return;
                 }
 
-                backedTasksManager.removeEpicById(id);
-                writeResponse(exchange, "true", 204);
+                httpTaskManager.removeEpicById(id);
+                writeResponse(exchange, "", 204);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -263,8 +267,8 @@ public class HttpTaskServer {
 
         private void deleteHandleSubTasks(HttpExchange exchange) {
             try {
-                backedTasksManager.removeSubTaskMap();
-                writeResponse(exchange, "true", 204);
+                httpTaskManager.removeSubTaskMap();
+                writeResponse(exchange, "", 204);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -272,8 +276,8 @@ public class HttpTaskServer {
 
         private void deleteHandleEpic(HttpExchange exchange) {
             try {
-                backedTasksManager.removeEpicMap();
-                writeResponse(exchange, "true", 204);
+                httpTaskManager.removeEpicMap();
+                writeResponse(exchange, "", 204);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -281,8 +285,8 @@ public class HttpTaskServer {
 
         private void deleteHandleTask(HttpExchange exchange) {
             try {
-                backedTasksManager.removeTaskMap();
-                writeResponse(exchange, "true", 204);
+                httpTaskManager.removeTaskMap();
+                writeResponse(exchange, "", 204);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -299,12 +303,12 @@ public class HttpTaskServer {
 
                 Integer id = idFromParam.get();
 
-                if (!backedTasksManager.getAllTaskMap().containsKey(id)) {
+                if (!httpTaskManager.getAllTaskMap().containsKey(id)) {
                     writeResponse(exchange, "Введен неверный идентификатор задачи.", 400);
                     return;
                 }
-                backedTasksManager.removeTaskById(id);
-                writeResponse(exchange, "true", 204);
+                httpTaskManager.removeTaskById(id);
+                writeResponse(exchange, "", 204);
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -313,8 +317,8 @@ public class HttpTaskServer {
 
         private void deleteHandleAll(HttpExchange exchange) {
             try {
-                backedTasksManager.removeAll();
-                writeResponse(exchange, "true", 204);
+                httpTaskManager.removeAll();
+                writeResponse(exchange, "", 204);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -330,14 +334,14 @@ public class HttpTaskServer {
                 }
 
                 Integer idTask = idFromParam.get();
-                Epic epicById = backedTasksManager.getEpicById(idTask);
+                Epic epicById = httpTaskManager.getEpicById(idTask);
 
                 if (epicById == null) {
                     writeResponse(exchange, "Введен неверный идентификатор задачи.", 400);
                     return;
                 }
 
-                List<SubTask> subTasksByEpic = backedTasksManager.getSubTasksByEpic(epicById);
+                List<SubTask> subTasksByEpic = httpTaskManager.getSubTasksByEpic(epicById);
                 String response = gson.toJson(subTasksByEpic);
                 writeResponse(exchange, response, 200);
             } catch (IOException e) {
@@ -346,7 +350,7 @@ public class HttpTaskServer {
         }
 
         private void getHandlePrioritizedTasks(HttpExchange exchange) {
-            List<Task> history = backedTasksManager.getPrioritizedTasks();
+            List<Task> history = httpTaskManager.getPrioritizedTasks();
             writeResponseForListTasks(exchange, history);
         }
 
@@ -364,7 +368,7 @@ public class HttpTaskServer {
         }
 
         private void getHandleHistory(HttpExchange exchange) {
-            List<Task> history = backedTasksManager.getHistory();
+            List<Task> history = httpTaskManager.getHistory();
             writeResponseForListTasks(exchange, history);
         }
 
@@ -377,7 +381,7 @@ public class HttpTaskServer {
                 }
 
                 Integer idTask = taskId.get();
-                SubTask taskById = backedTasksManager.getSubTaskById(idTask);
+                SubTask taskById = httpTaskManager.getSubTaskById(idTask);
                 if (taskById == null) {
                     writeResponse(exchange, "Введен неверный идентификатор задачи.", 400);
                     return;
@@ -406,7 +410,7 @@ public class HttpTaskServer {
                 }
 
                 Integer idTask = taskId.get();
-                Epic taskById = backedTasksManager.getEpicById(idTask);
+                Epic taskById = httpTaskManager.getEpicById(idTask);
 
                 if (taskById == null) {
                     writeResponse(exchange, "Введен неверный идентификатор задачи.", 400);
@@ -430,7 +434,7 @@ public class HttpTaskServer {
                 }
 
                 Integer idTask = taskId.get();
-                Task taskById = backedTasksManager.getTaskById(idTask);
+                Task taskById = httpTaskManager.getTaskById(idTask);
 
                 if (taskById == null) {
                     writeResponse(exchange, "Введен неверный идентификатор задачи.", 400);
@@ -445,7 +449,7 @@ public class HttpTaskServer {
         }
 
         private void getHandleSubTasks(HttpExchange exchange) {
-            HashMap<Integer, SubTask> subTaskMap = backedTasksManager.getAllSubTaskMap();
+            HashMap<Integer, SubTask> subTaskMap = httpTaskManager.getAllSubTaskMap();
             String response = gson.toJson(subTaskMap);
 
             try {
@@ -460,7 +464,7 @@ public class HttpTaskServer {
         }
 
         private void getHandleEpicTasks(HttpExchange exchange) {
-            HashMap<Integer, Epic> epicMap = backedTasksManager.getAllEpicMap();
+            HashMap<Integer, Epic> epicMap = httpTaskManager.getAllEpicMap();
             String response = gson.toJson(epicMap);
 
             try {
@@ -475,7 +479,7 @@ public class HttpTaskServer {
         }
 
         private void getHandleTasks(HttpExchange exchange) {
-            HashMap<Integer, Task> taskMap = backedTasksManager.getAllTaskMap();
+            HashMap<Integer, Task> taskMap = httpTaskManager.getAllTaskMap();
             String response = gson.toJson(taskMap);
 
             try {
@@ -489,7 +493,7 @@ public class HttpTaskServer {
         }
 
         private void getHandleAllMap(HttpExchange exchange) {
-            HashMap<Integer, Task> allMap = backedTasksManager.getAllMap();
+            HashMap<Integer, Task> allMap = httpTaskManager.getAllMap();
             String response = gson.toJson(allMap);
 
             try {
@@ -523,52 +527,7 @@ public class HttpTaskServer {
         }
     }
 
-
-//    static {
-//        Duration duration = Duration.of(1, ChronoUnit.DAYS);
-//        LocalDateTime localDateTime = LocalDateTime.of(2021, 1, 1, 0, 0);
-//
-//        Epic firstEpic = new Epic(1, TaskType.EPIC, "Купить продукты", TaskStatus.NEW
-//                , "Сходить в магазин за продуктами",
-//                duration,
-//                localDateTime);
-//        Epic secondEpic = new Epic(2, TaskType.EPIC, "Спорт", TaskStatus.NEW,
-//                "Побегать в парке.",
-//                duration,
-//                localDateTime.plusDays(1));
-//
-//        SubTask firstSubTask = new SubTask(3, TaskType.SUBTASK, "Купить помидоры"
-//                , TaskStatus.NEW, "Найти свежие помидоры в магазине.",
-//                duration.plusDays(1),
-//                localDateTime.plusDays(4),
-//                firstEpic.getId());
-//
-//        SubTask secondSubTask = new SubTask(4, TaskType.SUBTASK, "Купить пиццу", TaskStatus.NEW,
-//                "Заказать пиццу в кафе",
-//                duration.plusDays(2),
-//                localDateTime.plusDays(6),
-//                firstEpic.getId());
-//
-//        SubTask thirdSubTask = new SubTask(5, TaskType.SUBTASK, "Обман", TaskStatus.DONE,
-//                "Какой из тебя спортсмен.",
-//                duration.plusDays(1),
-//                localDateTime.plusDays(10),
-//                firstEpic.getId());
-//
-//        Task simpleTask = new Task(99, TaskType.TASK, "Просто задание", TaskStatus.DONE,
-//                "Просто задание и никак не связано с эпиком или подзадачей эпика.",
-//                duration.plusDays(1),
-//                localDateTime.plusYears(200));
-//
-//        Task simpleTaskWithoutTime = new Task(77, TaskType.TASK, "Просто задание", TaskStatus.DONE,
-//                "Просто задание и никак не связано с эпиком или подзадачей эпика.");
-//
-//        backedTasksManager.addEpic(firstEpic);
-//        backedTasksManager.addEpic(secondEpic);
-//        backedTasksManager.addSubTask(firstEpic.getId(), firstSubTask);
-//        backedTasksManager.addSubTask(firstEpic.getId(), secondSubTask);
-//        backedTasksManager.addSubTask(firstEpic.getId(), thirdSubTask);
-//        backedTasksManager.addTask(simpleTask);
-//        backedTasksManager.addTask(simpleTaskWithoutTime);
-//    }
+    public String getClientKey() {
+        return httpTaskManager.getKeyClient();
+    }
 }
