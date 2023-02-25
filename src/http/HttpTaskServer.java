@@ -26,7 +26,7 @@ public class HttpTaskServer {
     private static final int DEFAULT_PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private final HttpTaskManager httpTaskManager;
-    private HttpServer httpServer;
+    private final HttpServer httpServer;
     private static final Gson gson = new GsonBuilder()
             .serializeNulls()
             .setPrettyPrinting()
@@ -525,9 +525,5 @@ public class HttpTaskServer {
             }
             exchange.close();
         }
-    }
-
-    public String getClientKey() {
-        return httpTaskManager.getKeyClient();
     }
 }

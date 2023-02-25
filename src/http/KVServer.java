@@ -10,9 +10,6 @@ import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-/**
- * Постман: https://www.getpostman.com/collections/a83b61d9e1c81c10575c
- */
 public class KVServer {
     public static final int PORT = 8078;
     private final String apiToken;
@@ -135,9 +132,5 @@ public class KVServer {
         h.getResponseHeaders().add("Content-Type", "application/json");
         h.sendResponseHeaders(200, resp.length);
         h.getResponseBody().write(resp);
-    }
-
-    public String getApiToken() {
-        return apiToken;
     }
 }

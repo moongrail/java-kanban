@@ -88,8 +88,4 @@ public class HttpTaskManager extends FileBackedTasksManager {
             return historyManager;
         }
     }
-
-    public String getKeyClient() {
-        return client.getApiToken();
-    }
 }
