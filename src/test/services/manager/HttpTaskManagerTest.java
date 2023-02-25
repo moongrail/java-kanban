@@ -53,8 +53,6 @@ class HttpTaskManagerTest<T extends TaskManager> extends TaskManagerTest<T> {
         KVTaskClient client = new KVTaskClient(URL);
 
         client.put(client.getApiToken(), gson.toJson(taskManager));
-        client.put(client.getApiToken(), gson.toJson(taskManager));
-        client.put(client.getApiToken(), gson.toJson(taskManager));
 
         HttpTaskManager load = HttpTaskManager.load(URL, client.getApiToken());
 
