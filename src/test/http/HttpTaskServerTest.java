@@ -171,7 +171,8 @@ class HttpTaskServerTest {
                 .POST(BodyPublishers.ofString(json, StandardCharsets.UTF_8))
                 .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        client.send(request, HttpResponse.BodyHandlers.ofString());
+
         HttpResponse<String> response2 = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(201, response2.statusCode());
@@ -187,6 +188,7 @@ class HttpTaskServerTest {
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
         assertEquals(400, response.statusCode());
         assertEquals("Ошибка добавления таска.", response.body());
     }
@@ -246,6 +248,7 @@ class HttpTaskServerTest {
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
         assertEquals(400, response.statusCode());
         assertEquals("Введен неверный идентификатор задачи.", response.body());
     }
@@ -405,7 +408,8 @@ class HttpTaskServerTest {
                 .GET()
                 .build();
 
-        HttpResponse<String> history = client.send(getHistory, HttpResponse.BodyHandlers.ofString());
+        client.send(getHistory, HttpResponse.BodyHandlers.ofString());
+
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         Type newType = new TypeToken<List<Task>>() {
@@ -578,11 +582,9 @@ class HttpTaskServerTest {
                 .setHeader("content-type", "application/json")
                 .build();
 
-        HttpResponse<String> responseTwo = client.send(request3, HttpResponse.BodyHandlers.ofString());
-
-        HttpResponse<String> responseOne = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        HttpResponse<String> postResponse = client.send(post, HttpResponse.BodyHandlers.ofString());
+        client.send(request3, HttpResponse.BodyHandlers.ofString());
+        client.send(request, HttpResponse.BodyHandlers.ofString());
+        client.send(post, HttpResponse.BodyHandlers.ofString());
     }
 
     @AfterEach
