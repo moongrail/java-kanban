@@ -1,9 +1,7 @@
-package test.http;
+package http;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import http.HttpTaskServer;
-import http.KVServer;
 import models.task.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +24,8 @@ import java.util.concurrent.ExecutionException;
 
 import static java.net.http.HttpRequest.BodyPublishers;
 import static java.net.http.HttpRequest.newBuilder;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DisplayName("HttpTaskServer default test.")
 class HttpTaskServerTest {

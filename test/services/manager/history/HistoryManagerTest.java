@@ -1,12 +1,10 @@
-package test.services.manager.history;
+package services.manager.history;
 
 import models.task.Task;
 import models.task.TaskStatus;
 import models.task.TaskType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import services.manager.history.HistoryManager;
-import services.manager.history.InMemoryHistoryManager;
 
 import java.util.ArrayList;
 import java.util.List;

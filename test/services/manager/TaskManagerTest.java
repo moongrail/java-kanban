@@ -1,8 +1,7 @@
-package test.services.manager;
+package services.manager;
 
 import models.task.*;
 import org.junit.jupiter.api.Test;
-import services.manager.TaskManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package test.models.task;
+package task;
 
 import models.task.Epic;
 import models.task.SubTask;
@@ -15,7 +15,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @DisplayName("Model Epic task tests.")
 class EpicTest {

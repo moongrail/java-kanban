@@ -1,8 +1,10 @@
-package test.services.util;
+package services.util;
 
-import models.task.*;
+import models.task.SubTask;
+import models.task.Task;
+import models.task.TaskStatus;
+import models.task.TaskType;
 import org.junit.jupiter.api.Test;
-import services.util.TimeManagerUtil;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

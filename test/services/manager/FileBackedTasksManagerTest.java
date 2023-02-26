@@ -1,12 +1,10 @@
-package test.services.manager;
+package services.manager;
 
 import exceptions.ManagerSaveException;
 import models.task.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import services.manager.FileBackedTasksManager;
-import services.manager.TaskManager;
 
 import java.io.File;
 import java.io.IOException;

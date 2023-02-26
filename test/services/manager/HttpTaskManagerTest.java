@@ -1,4 +1,4 @@
-package test.services.manager;
+package services.manager;
 
 import com.google.gson.Gson;
 import http.HttpTaskServer;
@@ -9,8 +9,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import services.manager.HttpTaskManager;
-import services.manager.TaskManager;
 import services.util.Managers;
 
 import java.io.IOException;
